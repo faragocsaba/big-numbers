@@ -1,6 +1,6 @@
 # big-numbers
 
-A Python repository exploring three famous gargantuan mathematical bounds and fast-growing functions: **Graham's Number ($g_{64}$)**, the **Kirby-Paris Hydra Game ($\mathit{Hydra}(4)$)**, and the **`TREE(n)` Sequence ($\mathit{TREE}(3)$)**.
+A Python repository exploring three famous gargantuan mathematical bounds and fast-growing functions: **Graham's Number ($g_{64}$)**, the **Kirby-Paris Hydra Game ($\text{Hydra}(4)$)**, and the **`TREE(n)` Sequence ($\text{TREE}(3)$)**.
 
 All three numbers are finite integers that are so astronomically large that they cannot be written out in standard base-10 notation, exponent towers, or computed on physical hardware.
 
