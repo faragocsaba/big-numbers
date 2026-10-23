@@ -1,79 +1,84 @@
-# TREE(n) Sequence Evaluator in Python
+A Python repository exploring three famous gargantuan mathematical bounds and fast-growing functions: **Graham's Number ($g_{64}$)**, the **Kirby-Paris Hydra Game ($Hydra(4)$)**, and the **`TREE(n)` Sequence ($TREE(3)$)**.
 
-An exact algorithmic implementation of the **`TREE(n)`** fast-growing mathematical sequence in Python, powered by **Kruskal's Tree Theorem** and homeomorphic tree embedding.
-
----
-
-## 📌 Overview
-
-The `TREE(n)` sequence stems from finite combinatorics and graph theory. It represents the maximum length of a sequence of rooted, colored trees $T_1, T_2, \dots, T_k$ built from $n$ available colors such that:
-
-1. Each tree $T_i$ has at most $i$ vertices (i.e., $|V(T_i)| \le i$).
-2. No tree $T_j$ ($j < i$) homeomorphically embeds into a later tree $T_i$ ($T_j \le T_i$).
-
-By Kruskal's Tree Theorem, every such sequence must terminate. However, the sequence grows at an unimaginably fast rate:
-* $TREE(1) = 1$
-* $TREE(2) = 3$
-* $TREE(3)$ is an astronomically large number that vastly exceeds Graham's number or $TREE(2)^{TREE(2)}$.
-
-This repository provides an algorithmic solver that computes $TREE(1)$ and $TREE(2)$ and contains the complete recursive logic required to evaluate $TREE(n)$ given unbounded computational time and memory.
+All three numbers are finite integers that are so astronomically large that they cannot be written out in standard base-10 notation, exponent towers, or computed on physical hardware.
 
 ---
 
-## 🛠️ Features
+# 📊 Comparative Scale & Growth Hierarchy
 
-* **Tree Representation (`Tree`):** Immutable, hashable class for rooted trees with color annotations and canonical child ordering to handle graph isomorphism.
-* **Homeomorphic Embedding Detector (`is_embedded`):** Tests if $T_1 \le T_2$ using recursive subtree matching and maximum bipartite matching for sibling subtrees.
-* **Non-Isomorphic Tree Generator (`get_trees_of_size`):** Generates all unique rooted colored trees up to size $k$.
-* **Recursive Search Engine (`tree_search`):** Explores all valid tree continuations at step $i$ to compute the exact maximum sequence length.
+| Number / Sequence | Script | Ordinal Bound | Fast-Growing Hierarchy ($FGH$) | Proven In | Status on Physical Hardware |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| **Graham's Number ($g_{64}$)** | `graham.py` | $\omega + 1$ | $\approx f_{\omega + 1}(64)$ | Peano Arithmetic ($\text{PA}$) | Exceeds recursion depth limit almost immediately |
+| **Kirby-Paris $Hydra(4)$** | `hydra.py` | $\varepsilon_0$ | $\approx f_{\varepsilon_0}(4)$ | Second-Order Arithmetic | Execution time exceeds the age of the universe |
+| **Kruskal's $TREE(3)$** | `tree.py` | $\Gamma_0$ | $\approx f_{\Gamma_0}(1000)$ | $\text{ATR}_0$ (Transfinite Recursion) | Far transcends $Hydra(4)$ and $g_{64}$ |
 
 ---
 
-## 🚀 Getting Started
+# 📁 Repository Overview
 
-### Prerequisites
+# 1. Graham's Number (`graham.py`)
+Formulated by Ronald Graham in Ramsey theory as an upper bound for hypercube colorings, $g_{64}$ is constructed using Knuth's up-arrow notation ($\uparrow$):
 
-* Python 3.8 or higher.
-* No external third-party dependencies required (uses standard library utilities like `functools.lru_cache`).
+$$g_1 = 3 \uparrow\uparrow\uparrow\uparrow 3 = 3 \uparrow^4 3$$
+$$g_n = 3 \uparrow^{g_{n-1}} 3$$
+$$g_{64} = \text{Graham's Number}$$
 
-### Usage
-
-Clone the repository and run the script directly:
-
+**Usage:**
 ```bash
-git clone https://github.com/your-username/tree-n-python.git
-cd tree-n-python
-python tree_n.py
+python graham.py
 ```
-
-### Sample Output
-
-```text
---- Embedding Helper Tests ---
-Is Red embedded into Blue?: False
-Is Blue embedded into Blue-Blue path?: True
-Is Blue-Blue path embedded into Blue?: False
-
---- TREE Sequence Evaluation ---
-TREE(1) = 1
-TREE(2) = 3
-```
-
-> **Note on $TREE(3)$:** Calling `TREE(3)` in the code will not complete on physical hardware due to recursion depth and memory limitations. The algorithm is theoretically correct, but physical execution exceeds the lifespan of the universe.
+*Note: Executing `G(64)` will trigger Python's recursion limit due to the sheer depth of nested operations required for $g_1$.*
 
 ---
 
-## 🔬 How the Embedding Works
+# 2. Kirby-Paris Hydra Game (`hydra.py`)
+Introduced by Laurie Kirby and Jeff Paris in 1982, the Hydra Game is played on finite unlabelled rooted trees:
+- Hercules chops off a leaf head $h$.
+- If $h$'s parent is the root, no new heads grow.
+- If $h$'s parent $p$ is not the root, its grandparent $g$ spawns $n$ duplicate copies of the modified parent subtree (where $n$ is the current step number).
 
-The homeomorphic embedding condition $T_1 \le T_2$ is evaluated as follows:
+Using the standard **`rightmost`** leaf strategy:
+- $Hydra(1) = 1$ step
+- $Hydra(2) = 3$ steps
+- $Hydra(3) = 37$ steps
+- **$Hydra(4) > f_{\omega \cdot 2 + 4}(5) \gg \text{Graham's Number}$**
 
-1. **Subtree Match:** $T_1$ embeds into $T_2$ if $T_1$ embeds into any child subtree of $T_2$.
-2. **Root Match:** If the root colors of $T_1$ and $T_2$ are identical, $T_1$ embeds into $T_2$ if the children of $T_1$ can be injectively mapped into the children of $T_2$ such that each child of $T_1$ embeds into its corresponding matched child in $T_2$.
-
-Maximum Bipartite Matching (via Depth-First Search) is used to verify injective child mappings efficiently.
+**Usage:**
+```bash
+python hydra.py
+```
 
 ---
 
-## 📜 License
+# 3. Kruskal's `TREE(n)` Sequence (`tree.py`)
+`TREE(n)` represents the maximum length of a sequence of $n$-colored rooted trees $T_1, T_2, \dots, T_k$ such that:
+1. Each tree $T_i$ contains at most $i$ vertices ($|V(T_i)| \le i$).
+2. No previous tree $T_i$ homeomorphically embeds into any subsequent tree $T_j$ ($T_i \le T_j$ for $i < j$) under Kruskal's Tree Theorem.
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+Known values:
+- $TREE(1) = 1$
+- $TREE(2) = 3$
+- **$TREE(3) \gg Hydra(4) \gg \text{Graham's Number}$**
+
+**Usage:**
+```bash
+python tree.py
+```
+
+---
+
+# ⚡ Execution & Hardware Limitations
+
+All implementations are mathematically exact and algorithmically complete. However, due to the laws of physics and theoretical computation bounds:
+
+1. **`graham.py`**: Triggers a recursion limit when computing $g_1$.
+2. **`hydra.py`**: $Hydra(4)$ execution will run indefinitely as step counts dwarf the number of elementary particles in the universe.
+3. **`tree.py`**: $TREE(3)$ rapidly exceeds available RAM and stack depth due to the fast-growing size of non-embeddable search trees.
+
+---
+
+# 📚 References & Further Reading
+
+- **Graham's Number**: Graham, R. L.; Rothschild, B. L. (1971). *Ramsey's Theorem for n-parameter sets*.
+- **Hydra Game**: Kirby, L.; Paris, J. (1982). *Accessible independence results for Peano arithmetic*.
+- **Kruskal's Tree Theorem**: Friedman, H. (1998). *Internal Finite Trees and $\text{TREE}(n)$*.
