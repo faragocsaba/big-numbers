@@ -146,6 +146,6 @@ if __name__ == "__main__":
     play_hydra(hydra_h3)
 
     # Example 3: Height 4 Hydra (Root -> Node -> Node -> Node -> Head) -> greater than Graham's number, so it won't stop
-    print("\n=== HYDRA 3: Height 3 ===")
+    print("\n=== HYDRA 3: Height 4 ===")
     hydra_h4 = HydraNode([HydraNode([HydraNode([HydraNode([HydraNode()])])])])
     play_hydra(hydra_h4, verbose=False)
