@@ -1,4 +1,4 @@
-# big-numbers
+# Big numbers
 
 A Python repository exploring three famous gargantuan mathematical bounds and fast-growing functions: **Graham's Number ($g_{64}$)**, the **Kirby-Paris Hydra Game ($Hydra_4$)**, and the **`TREE(n)` Sequence ($TREE_3$)**.
 
@@ -6,7 +6,7 @@ All three numbers are finite integers that are so astronomically large that they
 
 ---
 
-## 📊 Comparative Scale & Growth Hierarchy
+# 📊 Comparative Scale & Growth Hierarchy
 
 | Number / Sequence | Script | Ordinal Bound | Fast-Growing Hierarchy ($FGH$) | Proven In | Status on Physical Hardware |
 | :--- | :--- | :--- | :--- | :--- | :--- |
@@ -16,9 +16,9 @@ All three numbers are finite integers that are so astronomically large that they
 
 ---
 
-## 📁 Repository Overview
+# 📁 Repository Overview
 
-### 1. Graham's Number (`graham.py`)
+## 1. Graham's Number (`graham.py`)
 Formulated by Ronald Graham in Ramsey theory as an upper bound for hypercube colorings, $g_{64}$ is constructed using Knuth's up-arrow notation ($\uparrow$):
 
 $$g_1 = 3 \uparrow\uparrow\uparrow\uparrow 3 = 3 \uparrow^4 3$$
@@ -33,7 +33,7 @@ python graham.py
 
 ---
 
-### 2. Kirby-Paris Hydra Game (`hydra.py`)
+## 2. Kirby-Paris Hydra Game (`hydra.py`)
 Introduced by Laurie Kirby and Jeff Paris in 1982, the Hydra Game is played on finite unlabelled rooted trees:
 - Hercules chops off a leaf head $h$.
 - If $h$'s parent is the root, no new heads grow.
@@ -52,7 +52,7 @@ python hydra.py
 
 ---
 
-### 3. Kruskal's `TREE(n)` Sequence (`tree.py`)
+## 3. Kruskal's `TREE(n)` Sequence (`tree.py`)
 `TREE(n)` represents the maximum length of a sequence of $n$-colored rooted trees $T_1, T_2, \dots, T_k$ such that:
 1. Each tree $T_i$ contains at most $i$ vertices ($|V(T_i)| \le i$).
 2. No previous tree $T_i$ homeomorphically embeds into any subsequent tree $T_j$ ($T_i \le T_j$ for $i < j$) under Kruskal's Tree Theorem.
@@ -69,7 +69,7 @@ python tree.py
 
 ---
 
-## ⚡ Execution & Hardware Limitations
+# ⚡ Execution & Hardware Limitations
 
 All implementations are mathematically exact and algorithmically complete. However, due to the laws of physics and theoretical computation bounds:
 
@@ -79,7 +79,7 @@ All implementations are mathematically exact and algorithmically complete. Howev
 
 ---
 
-## 📚 References & Further Reading
+# 📚 References & Further Reading
 
 - **Graham's Number**: Graham, R. L.; Rothschild, B. L. (1971). *Ramsey's Theorem for n-parameter sets*.
 - **Hydra Game**: Kirby, L.; Paris, J. (1982). *Accessible independence results for Peano arithmetic*.
