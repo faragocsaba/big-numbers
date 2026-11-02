@@ -864,7 +864,7 @@
             sortVal: 12.48,
             title: { hu: "Fák száma a Földön", en: "Number of trees on Earth" },
             badge: "$\\sim 3 \\cdot 10^{12}$",
-            desc: { hu: "A Földön kb. <b>3 billió fa</b> él — meplepő módon jóval több fa van a Földön, mint ahány csillag a Tejútrendszerben!", en: "There are ~$3\\text{ trillion}$ trees on Earth — surprisingly far more than stars in the Milky Way!" }
+            desc: { hu: "A Földön kb. <b>3 billió fa</b> él — meglepő módon jóval több fa van a Földön, mint ahány csillag a Tejútrendszerben!", en: "There are ~$3\\text{ trillion}$ trees on Earth — surprisingly far more than stars in the Milky Way!" }
         };
 
         const ILL_TRILLION_SEC = {
@@ -1368,14 +1368,14 @@
             sortVal: 3000.0,
             title: { hu: "O(N^N) futásidő N=1000 esetén", en: "O(N^N) time complexity for N=1000" },
             badge: "$1000^{1000} = 10^{3000}$",
-            desc: { hu: "Egy $O(N^N)$ komplexitású algoritmus lépéseinek száma $N=1000$ bemeneti méretnél.", en: "Step count of an $O(N^N)$ algorithm at input size $N=1000$ ($10^{3000}$ operations)." }
+            desc: { hu: "Egy $O(N^N)$ komplexitású算法 lépéseinek száma $N=1000$ bemeneti méretnél.", en: "Step count of an $O(N^N)$ algorithm at input size $N=1000$ ($10^{3000}$ operations)." }
         };
 
         const ILL_O_N_N_1M = {
             sortVal: 6000000.0,
             title: { hu: "1000000^1000000 futásidő-lépés", en: "1,000,000^1,000,000 computation steps" },
             badge: "$10^{6000000}$",
-            desc: { hu: "Egy $O(N^N)$ algoritmus lépésszáma $N=1000000$ (egymillió) esetén — egy 6 millió számjegyű érték.", en: "Step count of an $O(N^N)$ algorithm for $N=1,000,000$ (a 6-million-digit number)." }
+            desc: { hu: "Egy $O(N^N)$算法 lépésszáma $N=1000000$ (egymillió) esetén — egy 6 millió számjegyű érték.", en: "Step count of an $O(N^N)$ algorithm for $N=1,000,000$ (a 6-million-digit number)." }
         };
 
         const ILL_LOTTERY_HISTORY = {
@@ -1385,11 +1385,32 @@
             desc: { hu: "Annak az esélye, hogy a történelem összes lottóhúzásának mindegyikén egyetlen szelvénnyel játszva mindet eltaláljuk.", en: "Odds of hitting every single lottery jackpot in history with a single ticket each time." }
         };
 
+        const ILL_CHESS_TOTAL_GAMES_FARAGO = {
+            sortVal: 25000.0,
+            title: { hu: "A lehetséges FIDE sakkpartik száma (Faragó Csaba becslése)", en: "Total valid FIDE chess games (Csaba Faragó's estimate)" },
+            badge: "$\\sim 10^{25000}$",
+            desc: { hu: "A FIDE 75 lépéses szabálya szerinti elvi leghosszabb (17 697 féllépéses) partik elágazási fájának teljes mérete, 16 000–17 000 átlagos hosszal és 30–40-es elágazással számolva.", en: "Full game-tree size under FIDE's 75-move rule (17,697 half-moves maximum), estimated with an average length of 16,000–17,000 half-moves and 30–40 branching factor." }
+        };
+
+        const ILL_HU_LOTTERY_ALL_HISTORY = {
+            sortVal: 27774.0,
+            title: { hu: "Az Ötöslottó összes eddigi sorsolásának eltalálása (1957 óta)", en: "Winning every Hungarian Ötöslottó jackpot since 1957" },
+            badge: "1 : $43\\,949\\,268^{3634} \\approx 10^{27774}$",
+            desc: { hu: "Annak az esélye, hogy az 1957. március 7. óta eltelt 3634 héten mindvégig egyetlen szelvénnyel játszva az Ötöslottó összes sorsolásán telitalálatot érünk el ($1 : 43\\,949\\,268^{3634} \\approx 10^{27\\,774}$).", en: "Probability of matching every weekly Ötöslottó jackpot with a single ticket across all 3,634 draws since March 7, 1957 ($1 : 43,949,268^{3634} \approx 10^{27,774}$)." }
+        };
+
         const ILL_RUBIK_49X49 = {
             sortVal: 86708.0,
             title: { hu: "Legnagyobb működő Rubik-kocka (49×49×49)", en: "Largest working Rubik's Cube (49×49×49)" },
             badge: "$\\sim 10^{86708}$",
             desc: { hu: "A Preston Alden által 2024-ben épített 13 839 alkatrészes rekordkocka állapottere (egy 86 708 számjegyű szám).", en: "State space of the record 13,839-piece 49×49×49 cube built by Preston Alden in 2024." }
+        };
+
+        const ILL_KECSKEMET_PERMUTATIONS = {
+            sortVal: 456570.0,
+            title: { hu: "Kecskemét lakóinak lehetséges sorrendjei (100 000!)", en: "Permutations of the population of Kecskemét (100,000!)" },
+            badge: "$100\\,000! \\approx 2{,}82 \\cdot 10^{456570}$",
+            desc: { hu: "Kecskemét teljes lakosságának (~100 000 fő) valamennyi egyedi sorrendje ($100\\,000! \\approx 2{,}82 \\times 10^{456\\,570}$, egy 456 571 számjegyű szám).", en: "Total unique line-up variations for the entire population of Kecskemét (~100,000 residents) ($100,000! \\approx 2.82 \\times 10^{456,570}$, a 456,571-digit number)." }
         };
 
         const ILL_CARDS_SHUFFLE_RESET = {
@@ -1614,7 +1635,10 @@
             { targets: [{ v1: 2, v2: 3, x: 10 }], ...ILL_O_N_N_1000 },
             { targets: [{ v1: 2, v2: 3, x: 10 }], ...ILL_O_N_N_1M },
 
-            { targets: [{ v1: 3, v2: 1, x: 5 }], ...ILL_RUBIK_49X49 },
+            { targets: [{ v1: 3, v2: 1, x: 4 }], ...ILL_CHESS_TOTAL_GAMES_FARAGO },
+            { targets: [{ v1: 3, v2: 1, x: 4 }], ...ILL_HU_LOTTERY_ALL_HISTORY },
+            { targets: [{ v1: 3, v2: 1, x: 4 }], ...ILL_RUBIK_49X49 },
+            { targets: [{ v1: 3, v2: 1, x: 5 }], ...ILL_KECSKEMET_PERMUTATIONS },
             { targets: [{ v1: 3, v2: 1, x: 8 }], ...ILL_LOTTERY_HISTORY },
 
             { targets: [{ v1: 3, v2: 2, x: 1 }], ...ILL_CARDS_SHUFFLE_RESET },
