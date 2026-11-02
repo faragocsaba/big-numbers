@@ -1,0 +1,1841 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nagy Számok Cockpit — Állapot-alapú Illusztrációk</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;800&family=Outfit:wght@400;600;800;900&display=swap" rel="stylesheet">
+    
+    <!-- MathJax v3 konfiguráció és betöltés -->
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']]
+            },
+            svg: {
+                fontCache: 'global'
+            }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+
+    <style>
+        :root {
+            --bg-dark: #0a0d14;
+            --panel-bg: rgba(18, 24, 38, 0.85);
+            --border-color: rgba(255, 255, 255, 0.12);
+            --accent-cyan: #38bdf8;
+            --accent-purple: #c084fc;
+            --accent-gold: #fbbf24;
+            --text-main: #f3f4f6;
+            --text-muted: #9ca3af;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            font-family: 'Outfit', -apple-system, sans-serif;
+            min-height: 100vh;
+            padding: 1.25rem;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+        }
+
+        .cockpit-container {
+            width: 100%;
+            max-width: 900px;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .glass-panel {
+            background: var(--panel-bg);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 0.9rem 1.25rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+        }
+
+        .compact-toolbar {
+            display: grid;
+            grid-template-columns: auto auto 1fr auto auto;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        @media (max-width: 820px) {
+            .compact-toolbar {
+                grid-template-columns: 1fr;
+                gap: 0.85rem;
+            }
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.35rem;
+        }
+
+        .control-label {
+            font-size: 0.72rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--text-muted);
+            font-weight: 600;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .pill-selector {
+            display: flex;
+            background: rgba(0, 0, 0, 0.4);
+            padding: 3px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .pill-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            padding: 0.35rem 0.65rem;
+            font-size: 0.82rem;
+            font-weight: 700;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .pill-btn:hover {
+            color: var(--text-main);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .pill-btn.active {
+            background: var(--accent-cyan);
+            color: #000;
+            box-shadow: 0 0 12px rgba(56, 189, 248, 0.4);
+        }
+
+        .v2-group .pill-btn.active {
+            background: var(--accent-purple);
+            color: #000;
+            box-shadow: 0 0 12px rgba(192, 132, 252, 0.4);
+        }
+
+        .slider-wrap {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .custom-slider {
+            flex: 1;
+            accent-color: var(--accent-gold);
+            height: 6px;
+            cursor: pointer;
+        }
+
+        .slider-val-badge {
+            font-family: 'JetBrains Mono', monospace;
+            background: rgba(251, 191, 36, 0.15);
+            color: var(--accent-gold);
+            border: 1px solid rgba(251, 191, 36, 0.3);
+            padding: 0.2rem 0.55rem;
+            border-radius: 6px;
+            font-weight: 700;
+            font-size: 0.9rem;
+            min-width: 36px;
+            text-align: center;
+        }
+
+        .nav-btn {
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: var(--text-main);
+            padding: 0.35rem 0.65rem;
+            font-size: 0.85rem;
+            font-weight: 700;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            font-family: 'Outfit', sans-serif;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .nav-btn:hover {
+            background: rgba(56, 189, 248, 0.2);
+            border-color: var(--accent-cyan);
+            color: #ffffff;
+        }
+
+        .step-group {
+            display: flex;
+            gap: 0.4rem;
+            align-items: flex-end;
+        }
+
+        .hero-number-panel {
+            text-align: center;
+            padding: 1.5rem 1rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: radial-gradient(circle at center, rgba(56, 189, 248, 0.08) 0%, rgba(10, 13, 20, 0.6) 100%);
+            border: 1px solid rgba(56, 189, 248, 0.25);
+            min-height: 120px;
+        }
+
+        .tower-display {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: clamp(2.2rem, 6vw, 4.2rem);
+            font-weight: 800;
+            color: #ffffff;
+            text-shadow: 0 0 24px rgba(56, 189, 248, 0.5);
+            word-break: break-all;
+            line-height: 1.1;
+        }
+
+        .illustrations-section {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .section-header {
+            font-size: 0.82rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--accent-gold);
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-bottom: 0.2rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .illustrations-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .illustration-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-left: 4px solid var(--accent-gold);
+            border-radius: 10px;
+            padding: 0.85rem 1.1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.3rem;
+            transition: transform 0.15s ease, background 0.15s ease;
+        }
+
+        .illustration-card:hover {
+            background: rgba(255, 255, 255, 0.05);
+            transform: translateY(-1px);
+        }
+
+        .card-top-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .card-title {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #ffffff;
+        }
+
+        .card-badge {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            font-weight: 700;
+            background: rgba(56, 189, 248, 0.15);
+            color: var(--accent-cyan);
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            padding: 0.2rem 0.6rem;
+            border-radius: 6px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            white-space: nowrap;
+        }
+
+        .card-badge .mjx-chtml {
+            margin: 0 !important;
+            color: var(--accent-cyan) !important;
+        }
+
+        .card-desc {
+            font-size: 0.88rem;
+            color: var(--text-main);
+            line-height: 1.45;
+        }
+
+        .card-desc b {
+            color: var(--accent-gold);
+        }
+
+        .empty-state {
+            padding: 1.5rem 1rem;
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.88rem;
+            font-style: italic;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px dashed rgba(255, 255, 255, 0.12);
+            border-radius: 10px;
+        }
+
+        .shortcut-hints {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-top: 0.2rem;
+        }
+
+        .shortcut-hints kbd {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 4px;
+            padding: 0.1rem 0.35rem;
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--accent-cyan);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="cockpit-container">
+
+        <!-- 1. KOMPAKT VEZÉRLŐSÁV -->
+        <div class="glass-panel compact-toolbar">
+
+            <!-- VÁLTÓ 1 -->
+            <div class="control-group">
+                <div class="control-label">
+                    <span data-i18n="v1_title">Váltó 1 (Torony)</span>
+                    <span id="v1-desc" style="color: var(--accent-cyan)">1-szintes</span>
+                </div>
+                <div class="pill-selector">
+                    <button class="pill-btn active" onclick="handlePillV1(1)">1</button>
+                    <button class="pill-btn" onclick="handlePillV1(2)">2</button>
+                    <button class="pill-btn" onclick="handlePillV1(3)">3</button>
+                    <button class="pill-btn" onclick="handlePillV1(4)">4</button>
+                </div>
+            </div>
+
+            <!-- VÁLTÓ 2 -->
+            <div class="control-group v2-group">
+                <div class="control-label">
+                    <span data-i18n="v2_title">Váltó 2 (Lépték)</span>
+                    <span id="v2-desc" style="color: var(--accent-purple)">×1</span>
+                </div>
+                <div class="pill-selector">
+                    <button class="pill-btn active" onclick="handlePillV2(1)">1</button>
+                    <button class="pill-btn" onclick="handlePillV2(2)">2</button>
+                    <button class="pill-btn" onclick="handlePillV2(3)">3</button>
+                </div>
+            </div>
+
+            <!-- CSÚSZKA -->
+            <div class="control-group">
+                <div class="control-label">
+                    <span data-i18n="slider_title">Gázpedál (Csúszka x)</span>
+                    <span>1 ... 10</span>
+                </div>
+                <div class="slider-wrap">
+                    <input type="range" id="x-slider" class="custom-slider" min="1" max="10" value="1" step="1" oninput="handleSliderChange()">
+                    <div id="slider-val" class="slider-val-badge">1</div>
+                </div>
+            </div>
+
+            <!-- NYELV VÁLASZTÓ -->
+            <div class="control-group">
+                <div class="control-label">
+                    <span data-i18n="lang_title">Nyelv / Lang</span>
+                </div>
+                <div class="pill-selector">
+                    <button class="pill-btn active" id="lang-hu-btn" onclick="setLanguage('hu')">HU</button>
+                    <button class="pill-btn" id="lang-en-btn" onclick="setLanguage('en')">EN</button>
+                </div>
+            </div>
+
+            <!-- Léptető gombok -->
+            <div class="control-group">
+                <div class="control-label">
+                    <span data-i18n="step_title">Léptetés</span>
+                </div>
+                <div class="step-group">
+                    <button class="nav-btn" onclick="stepPrev()" title="Előző fokozat (Bal nyíl)">◀</button>
+                    <button class="nav-btn" onclick="stepNext()" title="Következő fokozat (Jobb nyíl)">▶</button>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- 2. KÖZVETLEN ALATTA LÉVŐ SZÁM-KIJELZŐ -->
+        <div class="glass-panel hero-number-panel">
+            <div id="tower-output" class="tower-display">$$1$$</div>
+        </div>
+
+        <!-- 3. DINAMIKUS ILLUSZTRÁCIÓK LISTÁJA -->
+        <div class="glass-panel illustrations-section">
+            <div class="section-header">
+                <span data-i18n="section_title">📍 Illusztrációk ezen a nagyságrenden</span>
+                <span id="range-badge" style="color: var(--text-muted); font-size: 0.75rem;"></span>
+            </div>
+
+            <div id="illustrations-container" class="illustrations-list">
+                <!-- JS tölti fel a szűrt kártyákkal -->
+            </div>
+        </div>
+
+        <div class="shortcut-hints">
+            <span data-i18n="hint_step"><kbd>←</kbd> / <kbd>→</kbd> Léptetés egyesével</span>
+            <span data-i18n="hint_home"><kbd>Home</kbd> Ugrás az elejére (1)</span>
+            <span data-i18n="hint_end"><kbd>End</kbd> Ugrás a végére</span>
+        </div>
+
+    </div>
+
+    <script>
+        /* =========================================================================
+           I18N DICTIONARIES & LANGUAGE STATE
+           ========================================================================= */
+        let currentLang = 'hu';
+
+        const UI_TEXTS = {
+            hu: {
+                v1_title: "Váltó 1 (Torony)",
+                v2_title: "Váltó 2 (Lépték)",
+                slider_title: "Gázpedál (Csúszka x)",
+                lang_title: "Nyelv / Lang",
+                step_title: "Léptetés",
+                section_title: "📍 Illusztrációk ezen a nagyságrenden",
+                empty_state: "Nincs rögzített illusztráció ehhez a beállításhoz.",
+                overlap_tag: "(Átfedő fokozat)",
+                gear_prefix: "Fokozat: ",
+                hint_step: "<kbd>←</kbd> / <kbd>→</kbd> Léptetés egyesével",
+                hint_home: "<kbd>Home</kbd> Ugrás az elejére (1)",
+                hint_end: "<kbd>End</kbd> Ugrás a végére",
+                v1_descs: ['1-szintes', '2-szintes (10^n)', '3-szintes (10^10^n)', '4-szintes (10^10^10^n)'],
+                v2_descs: ['×1', '×10', '×100']
+            },
+            en: {
+                v1_title: "Gear 1 (Tower)",
+                v2_title: "Gear 2 (Scale)",
+                slider_title: "Accelerator (Slider x)",
+                lang_title: "Language",
+                step_title: "Stepping",
+                section_title: "📍 Illustrations at this magnitude",
+                empty_state: "No registered illustrations for this setting.",
+                overlap_tag: "(Overlapping gear)",
+                gear_prefix: "Gear: ",
+                hint_step: "<kbd>←</kbd> / <kbd>→</kbd> Step one by one",
+                hint_home: "<kbd>Home</kbd> Jump to start (1)",
+                hint_end: "<kbd>End</kbd> Jump to end",
+                v1_descs: ['1-tier', '2-tier (10^n)', '3-tier (10^10^n)', '4-tier (10^10^10^n)'],
+                v2_descs: ['×1', '×10', '×100']
+            }
+        };
+
+        function getText(val) {
+            if (val && typeof val === 'object') {
+                return val[currentLang] || val['hu'] || '';
+            }
+            return val || '';
+        }
+
+        function setLanguage(lang) {
+            currentLang = lang;
+            document.getElementById('lang-hu-btn').classList.toggle('active', lang === 'hu');
+            document.getElementById('lang-en-btn').classList.toggle('active', lang === 'en');
+            
+            document.querySelectorAll('[data-i18n]').forEach(elem => {
+                const key = elem.getAttribute('data-i18n');
+                if (UI_TEXTS[lang][key]) {
+                    elem.innerHTML = UI_TEXTS[lang][key];
+                }
+            });
+
+            updatePillUI(currentState.v1, currentState.v2);
+            renderCalculations(currentState);
+        }
+
+        /* =========================================================================
+           HELPER DATA OBJECTS (BILINGUAL)
+           ========================================================================= */
+        const ILL_UNIT = {
+            sortVal: 0.0,
+            title: { hu: "Az alapegység", en: "The Base Unit" },
+            badge: "$10^0$",
+            desc: { hu: "A számlálás és a mérés matematikai kiindulópontja, az egyetlen egység.", en: "The mathematical starting point of counting and measurement, the single unit." }
+        };
+
+        const ILL_RUBIK_1X1 = {
+            sortVal: 0.001,
+            title: { hu: "1×1×1-es Rubik-kocka állapottere", en: "1×1×1 Rubik's Cube state space" },
+            badge: { hu: "1 állapot", en: "1 state" },
+            desc: { hu: "Az 1×1×1-es kocka forgathatatlan, így pontosan egyetlen triviális állapota létezik ($10^0$).", en: "The 1×1×1 cube cannot be rotated, so it has exactly one trivial state ($10^0$)." }
+        };
+
+        const ILL_DUST_1 = {
+            sortVal: 0.01,
+            title: { hu: "Egyetlen porszem", en: "A single grain of dust" },
+            badge: { hu: "1 porszem", en: "1 dust grain" },
+            desc: { hu: "Mikroszkopikus részecske a levegőben (kb. $0{,}05\\text{ mm}$ átmérővel) vagy egyetlen pislantás hossza.", en: "Microscopic particle in the air (~$0.05\\text{ mm}$ in diameter) or the duration of a single blink." }
+        };
+
+        const ILL_BINARY = {
+            sortVal: 0.2,
+            title: { hu: "Bináris számrendszer", en: "Binary numeral system" },
+            badge: { hu: "2 számjegy", en: "2 digits" },
+            desc: { hu: "A digitális számítógépek és az informatika alapegysége ($0$ és $1$).", en: "The foundational unit of digital computers and computer science ($0$ and $1$)." }
+        };
+
+        const ILL_DNA_HELIX = {
+            sortVal: 0.21,
+            title: { hu: "DNS kettős hélix", en: "DNA double helix" },
+            badge: { hu: "2 szál", en: "2 strands" },
+            desc: { hu: "A genetikai kódot hordozó 2 egymás köré tekeredő nukleotidszál.", en: "Two nucleotide strands winding around each other carrying genetic code." }
+        };
+
+        const ILL_TRINITY = {
+            sortVal: 0.4,
+            title: { hu: "Szentháromság", en: "Holy Trinity" },
+            badge: { hu: "3 személy", en: "3 persons" },
+            desc: { hu: "A teológiai teljesség szimbóluma (Atya, Fiú, Szentlélek).", en: "Symbol of theological completeness (Father, Son, Holy Spirit)." }
+        };
+
+        const ILL_SPATIAL_DIMENSIONS = {
+            sortVal: 0.41,
+            title: { hu: "Térbeli dimenziók", en: "Spatial dimensions" },
+            badge: { hu: "3 dimenzió", en: "3 dimensions" },
+            desc: { hu: "A mindennapi fizikai tér három független iránya (szélesség, magasság, mélység).", en: "The three independent directions of everyday physical space (width, height, depth)." }
+        };
+
+        const ILL_DNA_BASES = {
+            sortVal: 0.6,
+            title: { hu: "DNS bázisok száma", en: "Number of DNA bases" },
+            badge: { hu: "4 bázis", en: "4 bases" },
+            desc: { hu: "A teljes földi genetikai kódot mindössze <b>4 nukleotid bázis</b> (A, T, C, G) írja le.", en: "All Earthly genetic code is written using just <b>4 nucleotide bases</b> (A, T, C, G)." }
+        };
+
+        const ILL_PLATONIC_SOLIDS = {
+            sortVal: 0.7,
+            title: { hu: "Platóni testek száma", en: "Number of Platonic solids" },
+            badge: { hu: "5 szabályos test", en: "5 regular solids" },
+            desc: { hu: "A háromdimenziós térben mindössze <b>5 szabályos test</b> létezik (tetraéder, hexaéder, oktaéder, dodekaéder, ikozaéder).", en: "In 3D space, exactly <b>5 regular solids</b> exist (tetrahedron, cube, octahedron, dodecahedron, icosahedron)." }
+        };
+
+        const ILL_RUBIK_FACES = {
+            sortVal: 0.78,
+            title: { hu: "Rubik-kocka oldalai", en: "Faces of a Rubik's Cube" },
+            badge: { hu: "6 oldal", en: "6 faces" },
+            desc: { hu: "A klasszikus 3×3×3-as kockának <b>6 színes oldala</b> és 6 középső lapkája van.", en: "The classic 3×3×3 cube has <b>6 colored faces</b> and 6 center tiles." }
+        };
+
+        const ILL_BIBLICAL_SEVEN = {
+            sortVal: 0.85,
+            title: { hu: "Bibliai teljesség", en: "Biblical completeness" },
+            badge: { hu: "7-es szám", en: "Number 7" },
+            desc: { hu: "A teremtés 7 napja és a szakrális teljesség szimbóluma a Szentírásban.", en: "The 7 days of creation and a symbol of sacred completeness in Scripture." }
+        };
+
+        const ILL_RAINBOW = {
+            sortVal: 0.86,
+            title: { hu: "A szivárvány alapszínei", en: "Primary colors of a rainbow" },
+            badge: { hu: "7 szín", en: "7 colors" },
+            desc: { hu: "A látható fényspektrum klasszikus bontása (vörös, narancs, sárga, zöld, kék, indiagókék, ibolya).", en: "Classic breakdown of visible light spectrum (red, orange, yellow, green, blue, indigo, violet)." }
+        };
+
+        const ILL_PLANETS = {
+            sortVal: 0.9,
+            title: { hu: "A Naprendszer bolygói", en: "Planets of the Solar System" },
+            badge: { hu: "8 bolygó", en: "8 planets" },
+            desc: { hu: "A Naprendszerünkben jelenleg <b>8 hivatalos bolygót</b> tartunk számon (a Plútó 2006 óta törpebolygó).", en: "Our Solar System currently counts <b>8 official planets</b> (Pluto classified as dwarf planet since 2006)." }
+        };
+
+        const ILL_GREEK_MUSES = {
+            sortVal: 0.95,
+            title: { hu: "Görög múzsák száma", en: "Number of Greek Muses" },
+            badge: { hu: "9 múzsa", en: "9 Muses" },
+            desc: { hu: "A klasszikus mitológiában a művészetek és tudományok 9 védnöke (Kalliopé, Klio, Melpomené, Terpszikhoré stb.).", en: "In classical mythology, the 9 patron goddesses of arts and sciences (Calliope, Clio, Melpomene, Terpsichore, etc.)." }
+        };
+
+        const ILL_FINGERS = {
+            sortVal: 1.0,
+            title: { hu: "Ujjak a két kezünkön", en: "Fingers on two hands" },
+            badge: "$10^1$",
+            desc: { hu: "<b>10 darab</b> ujj az emberi kézen; a tízes számrendszerünk biológiai alapja.", en: "<b>10 fingers</b> on human hands; the biological foundation of our base-10 numeral system." }
+        };
+
+        const ILL_MOON_WALKERS = {
+            sortVal: 1.08,
+            title: { hu: "A Holdon járt emberek száma", en: "People who walked on the Moon" },
+            badge: { hu: "12 fő", en: "12 astronauts" },
+            desc: { hu: "Az Apollo-program során (1969–1972) összesen <b>12 űrhajós</b> lépett a Hold felszínére.", en: "During the Apollo program (1969–1972), a total of <b>12 astronauts</b> walked on the Moon." }
+        };
+
+        const ILL_AMINO_ACIDS = {
+            sortVal: 1.3,
+            title: { hu: "Fehérjealkotó aminosavak", en: "Proteinogenic amino acids" },
+            badge: { hu: "20 aminosav", en: "20 amino acids" },
+            desc: { hu: "A földi élet fehérjéit mindössze <b>20-féle alapadagoló aminosav</b> láncolata építi fel.", en: "Proteins of terrestrial life are built from chains of just <b>20 standard amino acids</b>." }
+        };
+
+        const ILL_CHRIST_AGE = {
+            sortVal: 1.45,
+            title: { hu: "Krisztusi kor", en: "Age of Christ" },
+            badge: { hu: "33 év", en: "33 years" },
+            desc: { hu: "Jézus Krisztus földi életének hagyományos éveinek száma; a beteljesedés és érettség szimbóluma.", en: "Traditional age of Jesus Christ's earthly life; symbol of fulfillment and maturity." }
+        };
+
+        const ILL_BIBLICAL_FAST = {
+            sortVal: 1.55,
+            title: { hu: "Bibliai 40 napos böjt", en: "Biblical 40-day fast" },
+            badge: { hu: "40 nap", en: "40 days" },
+            desc: { hu: "A vízözön, a pusztai vándorlás és a húsvét előtti böjt hagyományos időtartama.", en: "Traditional duration of the Deluge, wilderness wanderings, and Lenten fasting." }
+        };
+
+        const ILL_QUARANTINE = {
+            sortVal: 1.56,
+            title: { hu: "Pestis-karantén", en: "Plague quarantine" },
+            badge: { hu: "40 nap", en: "40 days" },
+            desc: { hu: "Az eredeti velencei karantén (<i>quarentena</i>) hossza a gyanús hajók elkülönítésére.", en: "Length of the original Venetian quarantine (<i>quarentena</i>) isolating suspect ships." }
+        };
+
+        const ILL_HUMAN_CHROMOSOMES = {
+            sortVal: 1.66,
+            title: { hu: "Emberi kromoszómák száma", en: "Number of human chromosomes" },
+            badge: { hu: "46 kromoszóma", en: "46 chromosomes" },
+            desc: { hu: "Minden normál emberi testi sejt magjában 23 pár, azaz <b>46 kromoszóma</b> található.", en: "Inside every normal human somatic cell nucleus, there are 23 pairs, i.e., <b>46 chromosomes</b>." }
+        };
+
+        const ILL_CHESSBOARD_SQUARES = {
+            sortVal: 1.81,
+            title: { hu: "Sakktábla mezőinek száma", en: "Number of chessboard squares" },
+            badge: { hu: "64 mező", en: "64 squares" },
+            desc: { hu: "Egy 8×8-as klasszikus sakktábla <b>64 négyzetből</b> (32 világos és 32 sötét) áll.", en: "A standard 8×8 chessboard consists of <b>64 squares</b> (32 light and 32 dark)." }
+        };
+
+        const ILL_SEVENTY_DISCIPLES = {
+            sortVal: 1.85,
+            title: { hu: "Hetven tanítvány", en: "Seventy Disciples" },
+            badge: { hu: "70 fő", en: "70 persons" },
+            desc: { hu: "A bibliai hagyományban a népek közé kiküldött tanítványok száma.", en: "The number of disciples sent out into the world in Biblical tradition." }
+        };
+
+        const ILL_HUMAN_LIFESPAN = {
+            sortVal: 1.86,
+            title: { hu: "Az emberöltő hossza", en: "Traditional human lifespan" },
+            badge: { hu: "70 év", en: "70 years" },
+            desc: { hu: "A Zsoltárok könyve szerinti klasszikus emberöltő hossza ($70\\text{ év}$, erősebbeknél $80$).", en: "Classic lifespan in Psalms ($70\\text{ years}$, or $80$ by strength)." }
+        };
+
+        const ILL_AROUND_WORLD_80_DAYS = {
+            sortVal: 1.9,
+            title: { hu: "80 nap alatt a Föld körül", en: "Around the World in 80 Days" },
+            badge: { hu: "80 nap", en: "80 days" },
+            desc: { hu: "Jules Verne híres regényének címszereplő időkerete Phileas Fogg Föld körüli utazásához.", en: "The titular timeframe in Jules Verne's famous novel for Phileas Fogg's voyage." }
+        };
+
+        const ILL_PIANO_KEYS = {
+            sortVal: 1.94,
+            title: { hu: "Zongora billentyűinek száma", en: "Number of piano keys" },
+            badge: { hu: "88 billentyű", en: "88 keys" },
+            desc: { hu: "Egy standard akusztikus manuális zongora 52 fehér és 36 fekete, összesen <b>88 billentyűvel</b> rendelkezik.", en: "A standard acoustic piano has 52 white and 36 black keys, totaling <b>88 keys</b>." }
+        };
+
+        const ILL_HUNDRED = {
+            sortVal: 2.0,
+            title: { hu: "A százas nagyságrend", en: "Order of hundreds" },
+            badge: "$10^2$",
+            desc: { hu: "Egy centiméter milliméterekben kifejezve, vagy egy teljes évszázad éveinek száma.", en: "A centimeter in millimeters, or the number of years in a full century." }
+        };
+
+        const ILL_ELO_100 = {
+            sortVal: 2.01,
+            title: { hu: "100 Élő-pont különbség (Sakk)", en: "100 Elo point difference (Chess)" },
+            badge: { hu: "+100 Élő-pont", en: "+100 Elo points" },
+            desc: { hu: "Sakkban 100 Élő-pont különbség kb. <b>64%-os várható pontarányt</b> jelent a magasabb pontszámú játékos javára.", en: "In chess, a 100 Elo difference means roughly a <b>64% expected score</b> for the higher rated player." }
+        };
+
+        const ILL_HUMAN_BONES = {
+            sortVal: 2.06,
+            title: { hu: "Emberi csontok száma", en: "Number of human bones" },
+            badge: { hu: "206 csont", en: "206 bones" },
+            desc: { hu: "Egy felnőtt emberi csontváz pontosan <b>206 különálló csontból</b> épül fel.", en: "An adult human skeleton is composed of exactly <b>206 individual bones</b>." }
+        };
+
+        const ILL_SPARTANS = {
+            sortVal: 3.0,
+            title: { hu: "Thermopülai spártaiak", en: "Spartans at Thermopylae" },
+            badge: { hu: "300 harcos", en: "300 warriors" },
+            desc: { hu: "Leonidasz király <b>300 spártai harcosa</b> a Thermopülai-szorosnál a perzsa seregek ellen.", en: "King Leonidas' <b>300 Spartan warriors</b> at the pass of Thermopylae against the Persian forces." }
+        };
+
+        const ILL_SUN_MOON_RATIO = {
+            sortVal: 4.0,
+            title: { hu: "Nap és Hold illeszkedési aránya", en: "Sun & Moon size-distance ratio" },
+            badge: "$400\\times$",
+            desc: { hu: "A Nap kb. <b>400-szor nagyobb</b> a Holdnál, de <b>400-szor messzebb</b> is van tőlünk — ezért látjuk őket pontosan ugyanakkorának a teljes napfogyatkozáskor.", en: "The Sun is ~$400\\times$ larger than the Moon, but ~$400\\times$ further away — appearing almost identical in size during total solar eclipses." }
+        };
+
+        const ILL_PAPER_REAM = {
+            sortVal: 5.0,
+            title: { hu: "Egy rizma papír", en: "A ream of paper" },
+            badge: { hu: "500 ív", en: "500 sheets" },
+            desc: { hu: "A papíripari standard szerint egyetlen rizma irodai papír pontosan <b>500 lapot</b> tartalmaz.", en: "By paper industry standards, a single ream of office paper contains exactly <b>500 sheets</b>." }
+        };
+
+        const ILL_HUMAN_MUSCLES = {
+            sortVal: 6.0,
+            title: { hu: "Emberi vázizmok száma", en: "Number of human skeletal muscles" },
+            badge: { hu: "$\\sim 600$ izom", en: "$\\sim 600$ muscles" },
+            desc: { hu: "Az emberi testben nagyságrendileg <b>600 különálló vázizom</b> biztosítja a mozgást.", en: "The human body contains approximately <b>600 skeletal muscles</b> providing movement." }
+        };
+
+        const ILL_ELO_700 = {
+            sortVal: 7.0,
+            title: { hu: "700 Élő-pont különbség", en: "700 Elo point difference" },
+            badge: { hu: "+700 Élő-pont", en: "+700 Elo points" },
+            desc: { hu: "Sakkban és góban a 700 Élő-pontos különbség a játékosok között <b>99% feletti nyerési esélyt</b> jelent az erősebb fél javára.", en: "In chess and Go, a 700 Elo difference implies a <b>>99% win probability</b> for the stronger player." }
+        };
+
+        const ILL_BURJ_KHALIFA = {
+            sortVal: 8.28,
+            title: { hu: "A Burj Khalifa magassága", en: "Height of Burj Khalifa" },
+            badge: "828 m",
+            desc: { hu: "A Föld jelenlegi legmagasabb épületének, a dubaji Burj Khalifának a magassága <b>828 méter</b>.", en: "The height of Dubai's Burj Khalifa, currently Earth's tallest building, is <b>828 meters</b>." }
+        };
+
+        const ILL_LAVA_TEMP = {
+            sortVal: 9.0,
+            title: { hu: "A vulkáni láva hőmérséklete", en: "Temperature of volcanic lava" },
+            badge: "$\\sim 900\\,^\\circ\\text{C}$",
+            desc: { hu: "A szilíciumszegény bazaltláva felszíni kiömlési hőmérséklete átlagosan <b>900 °C</b> körül mozog.", en: "Surface eruption temperature of silica-poor basaltic lava averages around <b>900 °C</b>." }
+        };
+
+        const ILL_DUST_1K = {
+            sortVal: 3.0,
+            title: { hu: "1 000 porszem (Térfogat)", en: "1,000 dust grains (Volume)" },
+            badge: { hu: "$10^3$ porszem", en: "$10^3$ grains" },
+            desc: { hu: "Egyetlen apró, alig érezhető csipetnyi finom por.", en: "A tiny, barely noticeable pinch of fine dust." }
+        };
+
+        const ILL_THOUSAND_SEC = {
+            sortVal: 3.01,
+            title: { hu: "1 000 másodperc (Időtartam)", en: "1,000 seconds (Duration)" },
+            badge: { hu: "$10^3\\,\\text{mp}$", en: "$10^3\\,\\text{sec}$" },
+            desc: { hu: "Pontosan <b>16,6 perc</b> — egy kávészünet vagy egy rövid, kellemes séta időtartama.", en: "Exactly <b>16.6 minutes</b> — a coffee break or a brief pleasant walk." }
+        };
+
+        const ILL_MYRIAD = {
+            sortVal: 4.0,
+            title: { hu: "Miriád", en: "Myriad" },
+            badge: "$10^4$",
+            desc: { hu: "Az ókori görögök és a távol-keleti kultúrák (kínai 万 <i>wàn</i>) $10\,000$-es számlálási alapegysége.", en: "The base counting unit of $10,000$ in ancient Greek and East Asian cultures (Chinese 万 <i>wàn</i>)." }
+        };
+
+        const ILL_HAIRS_100K = {
+            sortVal: 5.0,
+            title: { hu: "Emberi hajszálak száma", en: "Number of human scalp hairs" },
+            badge: { hu: "$\\sim 10^5$ hajszál", en: "$\\sim 10^5$ hairs" },
+            desc: { hu: "Egy felnőtt ember fejbőrén átlagosan <b>100 000 hajszál</b> található.", en: "An adult human scalp contains an average of <b>100,000 hair follicles</b>." }
+        };
+
+        const ILL_DUST_1M = {
+            sortVal: 6.0,
+            title: { hu: "1 millió porszem (Térfogat)", en: "1 million dust grains (Volume)" },
+            badge: { hu: "$10^6$ porszem", en: "$10^6$ grains" },
+            desc: { hu: "Körülbelül egyetlen csésze finom por vagy homok.", en: "Approximately one cup of fine dust or sand." }
+        };
+
+        const ILL_MILLION_SEC = {
+            sortVal: 6.01,
+            title: { hu: "1 millió másodperc (Időtartam)", en: "1 million seconds (Duration)" },
+            badge: { hu: "$10^6\\,\\text{mp}$", en: "$10^6\\,\\text{sec}$" },
+            desc: { hu: "Pontosan <b>11,5 nap</b> — egy kiadós, csaknem kéthetes nyaralás hossza.", en: "Exactly <b>11.5 days</b> — a relaxing nearly two-week vacation." }
+        };
+
+        const ILL_RUBIK_2X2 = {
+            sortVal: 6.56,
+            title: { hu: "2×2×2 Rubik-kocka (Pocket Cube)", en: "2×2×2 Rubik's Cube (Pocket Cube)" },
+            badge: "$3{,}67 \\cdot 10^6$",
+            desc: { hu: "A mini Rubik-kocka lehetséges egyedi állásainak száma: <b>3 674 160</b>.", en: "Number of unique states of the Pocket Cube: <b>3,674,160</b>." }
+        };
+
+        const ILL_POPULATION_HU = {
+            sortVal: 7.0,
+            title: { hu: "Magyarország népessége", en: "Population of Hungary" },
+            badge: "$\\sim 9{,}6 \\cdot 10^6$",
+            desc: { hu: "Magyarország lakossága jelenleg kb. 9,6 millió fő ($9{,}6 \\cdot 10^6$).", en: "The current population of Hungary is ~$9.6\\text{ million}$ people ($9.6 \times 10^6$)." }
+        };
+
+        const ILL_MEGAPIXEL_10M = {
+            sortVal: 7.01,
+            title: { hu: "10 Megapixeles okostelefon fotó", en: "10 Megapixel smartphone photo" },
+            badge: { hu: "$10^7$ képpont", en: "$10^7$ pixels" },
+            desc: { hu: "Egy standard okostelefon-fénykép $10\\text{ megapixel}$, azaz 10 millió egyedi képpont.", en: "A standard smartphone photo is $10\\text{ megapixels}$, i.e., 10 million distinct pixels." }
+        };
+
+        const ILL_LOTTERY_5_90 = {
+            sortVal: 7.64,
+            title: { hu: "Ötöslottó telitalálat esélye (5/90)", en: "5/90 Lottery jackpot odds" },
+            badge: "1 : $4{,}39 \\cdot 10^7$",
+            desc: { hu: "Annak a valószínűsége, hogy egyetlen szelvénnyel kihúzzák mind az 5 számunkat a 90-ből ($\\binom{90}{5} = 43\\,949\\,268$, azaz kb. 1 a 44 millióhoz).", en: "Probability of matching all 5 numbers out of 90 with a single ticket ($\\binom{90}{5} = 43,949,268$, ~$1\\text{ in }44\\text{ million}$)." }
+        };
+
+        const ILL_RETINA_RODS = {
+            sortVal: 8.0,
+            title: { hu: "A retina pálcikái", en: "Retinal rod cells" },
+            badge: { hu: "$\\sim 10^8$ pálcika", en: "$\\sim 10^8$ rods" },
+            desc: { hu: "Az emberi szem retinájában kb. <b>120 millió pálcika</b> felelős a sötétben való látásért.", en: "The human retina has ~$120\\text{ million}$ rod cells responsible for night vision." }
+        };
+
+        const ILL_IPV4_ADDRESSES = {
+            sortVal: 9.63,
+            title: { hu: "Összes IPv4 cím száma", en: "Total IPv4 address space" },
+            badge: "$4{,}29 \\cdot 10^9$",
+            desc: { hu: "A 32 bites IPv4 protokoll által elméletileg lefedhető egyedi IP-címek száma ($2^{32} = 4\,294\,967\,296$ cím).", en: "Total unique IP addresses addressable by 32-bit IPv4 ($2^{32} = 4,294,967,296$)." }
+        };
+
+        const ILL_DUST_1B = {
+            sortVal: 9.0,
+            title: { hu: "1 milliárd porszem (Térfogat)", en: "1 billion dust grains (Volume)" },
+            badge: { hu: "$10^9$ porszem", en: "$10^9$ grains" },
+            desc: { hu: "Körülbelül 1 köbméter tömör por vagy szitált homok.", en: "Approximately 1 cubic meter of dense dust or sifted sand." }
+        };
+
+        const ILL_BILLION_SEC = {
+            sortVal: 9.01,
+            title: { hu: "1 milliárd másodperc (Időtartam)", en: "1 billion seconds (Duration)" },
+            badge: { hu: "$10^9\\,\\text{mp}$", en: "$10^9\\,\\text{sec}$" },
+            desc: { hu: "Pontosan <b>31,7 év</b> — egy felnőtt emberi karrier vagy fél emberöltő időtartama.", en: "Exactly <b>31.7 years</b> — an adult career or half a generation." }
+        };
+
+        const ILL_EARTH_POPULATION = {
+            sortVal: 9.91,
+            title: { hu: "A Föld emberi népessége", en: "Global human population" },
+            badge: { hu: "$\\sim 8{,}1$ milliárd", en: "$\\sim 8.1$ billion" },
+            desc: { hu: "A Földön jelenleg élő emberek teljes száma (kb. <b>8 100 000 000</b> fő).", en: "Total number of humans currently living on Earth (~<b>8,100,000,000</b>)." }
+        };
+
+        const ILL_HU_GDP = {
+            sortVal: 11.38,
+            title: { hu: "Magyarország éves GDP-je (2025)", en: "Annual GDP of Hungary (2025)" },
+            badge: "$2{,}4 \\cdot 10^{11}\\,\\text{USD}$",
+            desc: { hu: "Magyarország éves bruttó hazai terméke kb. <b>240 milliárd USD</b> ($2,4 \\cdot 10^{11}\\,\\text{USD}$).", en: "Hungary's annual Gross Domestic Product is ~$240\\text{ billion USD}$ ($2.4 \times 10^{11}\\,\\text{USD}$)." }
+        };
+
+        const ILL_MILKYWAY_STARS = {
+            sortVal: 11.31,
+            title: { hu: "Csillagok a Tejútrendszerben", en: "Stars in the Milky Way" },
+            badge: "$10^{11}$–$4\\cdot 10^{11}$",
+            desc: { hu: "A saját galaxisunkban, a Tejútrendszerben található csillagok becsült száma (kb. <b>10¹¹ – 4×10¹¹</b>).", en: "Estimated number of stars in our home galaxy, the Milky Way (~<b>10¹¹ – 4×10¹¹</b>)." }
+        };
+
+        const ILL_TREES_EARTH = {
+            sortVal: 12.48,
+            title: { hu: "Fák száma a Földön", en: "Number of trees on Earth" },
+            badge: "$\\sim 3 \\cdot 10^{12}$",
+            desc: { hu: "A Földön kb. <b>3 billió fa</b> él — meplepő módon jóval több fa van a Földön, mint ahány csillag a Tejútrendszerben!", en: "There are ~$3\\text{ trillion}$ trees on Earth — surprisingly far more than stars in the Milky Way!" }
+        };
+
+        const ILL_TRILLION_SEC = {
+            sortVal: 12.0,
+            title: { hu: "1 billió másodperc (Időtartam)", en: "1 trillion seconds (Duration)" },
+            badge: { hu: "$10^{12}\\,\\text{mp}$", en: "$10^{12}\\,\\text{sec}$" },
+            desc: { hu: "Pontosan <b>31 700 év</b> — több idő, mint a teljes írott emberi történelem; az utolsó jégkorszak vége óta eltelt idő.", en: "Exactly <b>31,700 years</b> — longer than recorded human history." }
+        };
+
+        const ILL_DUST_TRILLION = {
+            sortVal: 12.01,
+            title: { hu: "1 billió porszem (Térfogat)", en: "1 trillion dust grains (Volume)" },
+            badge: { hu: "$10^{12}$ porszem", en: "$10^{12}$ grains" },
+            desc: { hu: "Körülbelül $100\\text{ liter}$ por (egy nagy hordónyi finom pormennyiség).", en: "Approximately $100\\text{ liters}$ of dust (a large barrel full)." }
+        };
+
+        const ILL_USA_GDP = {
+            sortVal: 13.43,
+            title: { hu: "Az USA éves GDP-je", en: "Annual GDP of the USA" },
+            badge: "$2{,}7 \\cdot 10^{13}\\,\\text{USD}$",
+            desc: { hu: "Az Egyesült Államok éves nemzeti összterméke kb. <b>27 000 milliárd USD</b> ($2,7 \\cdot 10^{13}\\,\\text{USD}$).", en: "Annual Gross Domestic Product of the US is ~$27\\text{ trillion USD}$ ($2.7 \times 10^{13}\\,\\text{USD}$)." }
+        };
+
+        const ILL_HUMAN_CELLS = {
+            sortVal: 13.57,
+            title: { hu: "Sejtek száma az emberi testben", en: "Cells in the human body" },
+            badge: "$3{,}7 \\cdot 10^{13}$",
+            desc: { hu: "Egy átlagos felnőtt emberi test kb. <b>37 billió sejt összehangolt közössége</b>.", en: "An average adult human body is a coordinated community of ~$37\\text{ trillion cells}$." }
+        };
+
+        const ILL_GLOBAL_GDP = {
+            sortVal: 14.0,
+            title: { hu: "A világ teljes éves GDP-je", en: "Global annual GDP" },
+            badge: "$10^{14}\\,\\text{USD}$",
+            desc: { hu: "A Föld összes országának együttes éves gazdasági termelése eléri a <b>100 000 milliárd USD-t</b> ($10^{14}\\,\\text{USD}$).", en: "Combined annual economic output of all Earth nations reaches ~$100\\text{ trillion USD}$ ($10^{14}\\,\\text{USD}$)." }
+        };
+
+        const ILL_GLOBAL_DEBT = {
+            sortVal: 14.48,
+            title: { hu: "A világ összeadóssága", en: "Global total debt" },
+            badge: "$3 \\cdot 10^{14}\\,\\text{USD}$",
+            desc: { hu: "A Föld államainak, vállalatinak és háztartásainak összesített adóssága eléri a <b>300 000 milliárd USD-t</b> ($3 \\cdot 10^{14}\\,\\text{USD}$).", en: "Total debt of governments, corporations, and households reaches ~$300\\text{ trillion USD}$." }
+        };
+
+        const ILL_MAC_ADDRESS = {
+            sortVal: 14.45,
+            title: { hu: "Összes MAC-cím száma", en: "Total MAC address space" },
+            badge: "$2{,}81 \\cdot 10^{14}$",
+            desc: { hu: "A hálózati kártyák egyedi fizikai azonosítására használt 48 bites MAC-címek ($2^{48}$) teljes terjedelme (kb. 281 billió cím).", en: "Total address space of 48-bit MAC addresses ($2^{48} \approx 281\\text{ trillion}$). " }
+        };
+
+        const ILL_BRAIN_SYNAPSES = {
+            sortVal: 14.01,
+            title: { hu: "Szinapszisok az emberi agyban", en: "Synapses in the human brain" },
+            badge: "$\\sim 10^{14}$",
+            desc: { hu: "Az emberi agy 86 milliárd idegsejtje között kb. <b>100 trillió kapcsolódási pont</b> (szinapszis) működik.", en: "The 86 billion neurons in the human brain form ~$100\\text{ trillion}$ synaptic connections." }
+        };
+
+        const ILL_DUST_QUADRILLION = {
+            sortVal: 15.0,
+            title: { hu: "1 billiárd porszem (Térfogat)", en: "1 quadrillion dust grains (Volume)" },
+            badge: { hu: "$10^{15}$ porszem", en: "$10^{15}$ grains" },
+            desc: { hu: "Körülbelül $100\\text{ m}^3$ por (egy átlagos családi ház teljes belső térfogata).", en: "Approximately $100\\text{ m}^3$ of dust (volume of an average family home)." }
+        };
+
+        const ILL_LIGHTYEAR_METERS = {
+            sortVal: 15.98,
+            title: { hu: "Egy fényév méterben", en: "One light-year in meters" },
+            badge: "$9{,}46 \\cdot 10^{15}\\,\\text{m}$",
+            desc: { hu: "A fény által egy év alatt megtett távolság: kb. <b>9,46 billiárd méter</b>.", en: "Distance traveled by light in one year: ~$9.46 \times 10^{15}\\text{ meters}$." }
+        };
+
+        const ILL_ANTS_EARTH = {
+            sortVal: 16.3,
+            title: { hu: "A Föld összes hangyája", en: "All ants on Earth" },
+            badge: "$\\sim 2 \\cdot 10^{16}$",
+            desc: { hu: "A Földön élő hangyák becsült összessége kb. <b>20 000 000 000 000 000</b> (2 × 10¹⁶) egyed.", en: "Estimated total population of living ants on Earth (~<b>$2 \times 10^{16}$</b> individuals)." }
+        };
+
+        const ILL_DUST_QUINTILLION = {
+            sortVal: 18.0,
+            title: { hu: "1 trillió porszem (Térfogat)", en: "1 quintillion dust grains (Volume)" },
+            badge: { hu: "$10^{18}$ porszem", en: "$10^{18}$ grains" },
+            desc: { hu: "Körülbelül $100\,000\\text{ m}^3$ por (egy teljes felhőkarcoló vagy stadion belső tere).", en: "Approximately $100,000\\text{ m}^3$ of dust (interior of a stadium or skyscraper)." }
+        };
+
+        const ILL_RUBIK_3X3 = {
+            sortVal: 19.63,
+            title: { hu: "3×3×3 Rubik-kocka kombinációi", en: "3×3×3 Rubik's Cube combinations" },
+            badge: "$4{,}32 \\cdot 10^{19}$",
+            desc: { hu: "A klasszikus Rubik-kocka lehetséges egyedi állásainak száma: <b>43 252 003 274 489 856 000</b>.", en: "Unique states of the classic Rubik's Cube: <b>43,252,003,274,489,856,000</b>." }
+        };
+
+        const ILL_GRAIN_SAND_ATOMS = {
+            sortVal: 20.0,
+            title: { hu: "Atomok száma egyetlen homokszemben", en: "Atoms in a single grain of sand" },
+            badge: { hu: "$\\sim 10^{20}$ atom", en: "$\\sim 10^{20}$ atoms" },
+            desc: { hu: "Egyetlen homokszemben nagyjából <b>annyi atom van, mint ahány homokszem található az egész Föld összes tengerpartján</b> együttvéve!", en: "A grain of sand has roughly <b>as many atoms as there are grains of sand on all Earth beaches</b> combined!" }
+        };
+
+        const ILL_PENGO_100M_B = {
+            sortVal: 20.01,
+            title: { hu: "100 millió B.-pengő bankjegy (1946)", en: "100 Million B.-Pengő banknote (1946)" },
+            badge: "$10^{20}$",
+            desc: { hu: "A világtörténelem legnagyobb névértékű kibocsátott bankjegye: 100 milliárd billió (100 trillió, <b>10²⁰</b>) pengő.", en: "Highest denomination printed banknote in world history ($10^{20}$ Pengő)." }
+        };
+
+        const ILL_DUST_SEXTILLION = {
+            sortVal: 21.0,
+            title: { hu: "1 trilliárd porszem (Térfogat)", en: "1 sextillion dust grains (Volume)" },
+            badge: { hu: "$10^{21}$ porszem", en: "$10^{21}$ grains" },
+            desc: { hu: "Körülbelül $0{,}1\\text{ km}^3$ por (egy kisebb hegy tömege porban kifejezve).", en: "Approximately $0.1\\text{ km}^3$ of dust (mass of a small mountain)." }
+        };
+
+        const ILL_BEACH_SAND_GRAINS = {
+            sortVal: 21.87,
+            title: { hu: "A Föld tengerpartjainak homokszemei", en: "Grains of sand on Earth's beaches" },
+            badge: "$\\sim 10^{22}$",
+            desc: { hu: "A Föld összes tengerpartján található homokszemek becsült száma (kb. <b>7,5 × 10²¹</b>).", en: "Estimated total grains of sand across all beaches on Earth (~<b>$7.5 \times 10^{21}$</b>)." }
+        };
+
+        const ILL_AVOGADRO = {
+            sortVal: 23.78,
+            title: { hu: "Avogadro-szám (1 mol)", en: "Avogadro constant (1 mol)" },
+            badge: "$6{,}022 \\cdot 10^{23}$",
+            desc: { hu: "Egy mol tetszőleges anyagban található atomok vagy molekulák száma.", en: "Number of atoms or molecules contained in one mole of substance." }
+        };
+
+        const ILL_DUST_SEPTILLION = {
+            sortVal: 24.0,
+            title: { hu: "1 kvadrillió porszem (Térfogat)", en: "1 septillion dust grains (Volume)" },
+            badge: { hu: "$10^{24}$ porszem", en: "$10^{24}$ grains" },
+            desc: { hu: "Körülbelül $100\\text{ km}^3$ por (a Balaton teljes víztömegének kb. 50-szerese).", en: "Approximately $100\\text{ km}^3$ of dust (~50 times the water volume of Lake Balaton)." }
+        };
+
+        const ILL_OBSERVABLE_UNIVERSE_DIAMETER = {
+            sortVal: 26.94,
+            title: { hu: "A megfigyelhető Univerzum átmérője", en: "Diameter of observable Universe" },
+            badge: "$8{,}8 \\cdot 10^{26}\\,\\text{m}$",
+            desc: { hu: "A megfigyelhető világegyetem teljes átmérője kb. <b>93 milliárd fényév</b> (8,8 × 10²⁶ méter).", en: "Diameter of the observable Universe is ~$93\\text{ billion light-years}$ ($8.8 \times 10^{26}\\text{ meters}$)." }
+        };
+
+        const ILL_HUMAN_BODY_ATOMS = {
+            sortVal: 27.85,
+            title: { hu: "Atomok száma az emberi testben", en: "Atoms in a human body" },
+            badge: "$7 \\cdot 10^{27}$",
+            desc: { hu: "Egy 70 kg-os felnőtt emberi testet körülbelül <b>7 kvadrillió atom</b> épít fel.", en: "A 70 kg human body is built from approximately <b>7 octillion atoms</b>." }
+        };
+
+        const ILL_HU_INFLATION_CUMULATIVE = {
+            sortVal: 27.58,
+            title: { hu: "A magyar hiperinfláció kumulált rátája", en: "Hungarian hyperinflation rate" },
+            badge: "$\\sim 3{,}8 \\cdot 10^{27}\\%$",
+            desc: { hu: "1945 augusztusa és 1946 júliusa között az árak átlagosan <b>3,8 × 10²⁷ %</b>-kal emelkedtek Magyarországon.", en: "Cumulative price increase in Hungary between Aug 1945 and July 1946." }
+        };
+
+        const ILL_PENGO_FORINT_EXCHANGE = {
+            sortVal: 29.6,
+            title: { hu: "Pengő – Forint elméleti váltószám", en: "Pengő to Forint exchange rate" },
+            badge: "$4 \\cdot 10^{29}\\,\\text{P}$",
+            desc: { hu: "A Forint bevezetésekor (1946. augusztus 1.) 1 Forintért elméletileg <b>400 octillió (4 × 10²⁹) Pengőt</b> kellett volna adni.", en: "Theoretical exchange rate on Aug 1, 1946: 1 Forint = $4 \times 10^{29}$ Pengő." }
+        };
+
+        const ILL_YUGOSLAV_DINAR = {
+            sortVal: 29.1,
+            title: { hu: "Jugoszláv dinár hiperinflációja (1966–1994)", en: "Yugoslav dinar hyperinflation" },
+            badge: { hu: "$1{,}3 \\cdot 10^{29}\\,\\text{dinár}$", en: "$1.3 \\cdot 10^{29}\\,\\text{dinar}$" },
+            desc: { hu: "A jugoszláv dinár sorozatos nullatörléseinek (denominációinak) eredőjeként 1994-re <b>1,3 × 10²⁹ régi dinár</b> ért 1 új dinárt.", en: "Result of redenominations: 1 new dinar = $1.3 \times 10^{29}$ original dinars." }
+        };
+
+        const ILL_DUST_OCTILLION = {
+            sortVal: 27.0,
+            title: { hu: "1 kvadrilliárd porszem (Térfogat)", en: "1 octillion dust grains (Volume)" },
+            badge: { hu: "$10^{27}$ porszem", en: "$10^{27}$ grains" },
+            desc: { hu: "Körülbelül $100\,000\\text{ km}^3$ por (Magyarország teljes területe felett 1 km magas tömör porréteg).", en: "Approximately $100,000\\text{ km}^3$ of dust (1 km thick layer over Hungary)." }
+        };
+
+        const ILL_SUN_MASS = {
+            sortVal: 30.3,
+            title: { hu: "A Nap tömege", en: "Mass of the Sun" },
+            badge: "$2 \\cdot 10^{30}\\,\\text{kg}$",
+            desc: { hu: "Központi csillagunk tömege kb. <b>2 nonillió kg</b> (a teljes Naprendszer tömegének 99,86%-a).", en: "Mass of the Sun is ~$2 \times 10^{30}\\text{ kg}$ (99.86% of Solar System mass)." }
+        };
+
+        const ILL_DUST_NONILLION = {
+            sortVal: 30.0,
+            title: { hu: "1 quintillió porszem (Térfogat)", en: "1 nonillion dust grains (Volume)" },
+            badge: { hu: "$10^{30}$ porszem", en: "$10^{30}$ grains" },
+            desc: { hu: "Körülbelül $100\\text{ millió km}^3$ por (a Föld teljes óceánjai víztömegének csaknem 10%-a).", en: "Approximately $100\\text{ million km}^3$ of dust (~10% of Earth's oceans)." }
+        };
+
+        const ILL_DUST_DECILLION = {
+            sortVal: 33.0,
+            title: { hu: "1 quintilliárd porszem (Térfogat)", en: "1 decillion dust grains (Volume)" },
+            badge: { hu: "$10^{33}$ porszem", en: "$10^{33}$ grains" },
+            desc: { hu: "Körülbelül $100\\text{ milliárd km}^3$ por (egy teljes Föld-méretű kőzetbolygó térfogatának kb. 10%-a).", en: "Approximately $100\\text{ billion km}^3$ of dust (~10% of Earth's total volume)." }
+        };
+
+        const ILL_UUID = {
+            sortVal: 36.72,
+            title: { hu: "Összes UUID v4 variáció", en: "Total UUID v4 variations" },
+            badge: "$5{,}31 \\cdot 10^{36}$",
+            desc: { hu: "A 128 bites Universally Unique Identifier (UUID v4) 122 bites tiszta entrópiájának ($2^{122}$) lehetséges változatai (a teljes 128 bites szókészlet $3{,}4 \\cdot 10^{38}$).", en: "122-bit pure entropy variations of UUID v4 ($2^{122} \approx 5.31 \times 10^{36}$)." }
+        };
+
+        const ILL_AES_128 = {
+            sortVal: 38.53,
+            title: { hu: "AES-128 kriptográfiai kulcstér", en: "AES-128 key space" },
+            badge: "$3{,}40 \\cdot 10^{38}$",
+            desc: { hu: "A 128 bites AES titkosítás lehetséges kulcsainak száma ($2^{128} \approx 3{,}40 \times 10^{38}$).", en: "Key space size for 128-bit AES encryption ($2^{128} \approx 3.40 \times 10^{38}$)." }
+        };
+
+        const ILL_BIOMASS_DNA_BASE_PAIRS = {
+            sortVal: 37.7,
+            title: { hu: "A Föld teljes biomasszájának DNS-bázispárjai", en: "DNA base pairs of all Earth biomass" },
+            badge: "$5 \\cdot 10^{37}$",
+            desc: { hu: "A Földön élő valamennyi élőlény sejtmagjaiban található összesített DNS-bázispárok száma.", en: "Total estimated DNA base pairs contained across all living organisms on Earth." }
+        };
+
+        const ILL_IPV6 = {
+            sortVal: 38.53,
+            title: { hu: "Az IPv6 teljes címtere", en: "Total IPv6 address space" },
+            badge: "$3{,}4 \\cdot 10^{38}$",
+            desc: { hu: "Az internetes eszközök azonosítására használt 128 bites IPv6 protokoll címtartománya ($2^{128}$). A Föld minden mm²-ére 6,6 × 10²³ külön cím jutna.", en: "128-bit IPv6 address space ($2^{128}$). Provides ~$6.6 \times 10^{23}$ addresses per mm² on Earth." }
+        };
+
+        const ILL_RUBIK_4X4 = {
+            sortVal: 45.87,
+            title: { hu: "4×4×4 Rubik-kocka (Rubik's Revenge)", en: "4×4×4 Rubik's Cube (Rubik's Revenge)" },
+            badge: "$7{,}40 \\cdot 10^{45}$",
+            desc: { hu: "A 4 rétegű Rubik-kocka lehetséges egyedi állásainak száma <b>7,4 × 10⁴⁵</b>-re ugrik.", en: "Unique state combinations for the 4-layer Rubik's Revenge: <b>$7.4 \times 10^{45}$</b>." }
+        };
+
+        const ILL_CHESS_LEGAL_POSITIONS = {
+            sortVal: 44.68,
+            title: { hu: "Legális sakkállások pontos száma", en: "Exact legal chess positions" },
+            badge: "$4{,}8 \\cdot 10^{44}$",
+            desc: { hu: "A sakktáblán a játékszabályok szerint ténylegesen elérhető (legális) pozíciók pontos száma ($4{,}8 \\cdot 10^{44}$).", en: "Exact number of reachable, legal board positions in chess ($4.8 \times 10^{44}$)." }
+        };
+
+        const ILL_CHESS_POSITIONS_UPPER = {
+            sortVal: 46.5,
+            title: { hu: "Szabályos sakkpozíciók felső határa", en: "Upper bound of legal chess states" },
+            badge: "$\\sim 10^{47}$",
+            desc: { hu: "A sakktáblán előforduló érvényes, szabályos táblaállások becsült felső elméleti korlátja.", en: "Estimated upper bound of valid board configurations in chess." }
+        };
+
+        const ILL_CONJECTURE_COUNTEREXAMPLE = {
+            sortVal: 49.9,
+            title: { hu: "Matematikai sejtés ellenpéldája", en: "Mathematical conjecture counterexample" },
+            badge: "$8{,}42 \\cdot 10^{49}$",
+            desc: { hu: "Az $n^{17}+9$ és $(n+1)^{17}+9$ relatív prím sejtés legkisebb ellenpéldája egy <b>50-jegyű szám</b>.", en: "Smallest counterexample to the $n^{17}+9$ coprimality conjecture is a 50-digit number." }
+        };
+
+        const ILL_PLANCK_TIMES = {
+            sortVal: 60.0,
+            title: { hu: "Planck-idők az Ősrobbanás óta", en: "Planck times since the Big Bang" },
+            badge: "$\\sim 8 \\cdot 10^{60}$",
+            desc: { hu: "Az Univerzum keletkezése ($13{,}8\\text{ milliárd év}$) óta eltelt idő a legkisebb fizikai időegységben, Planck-időben kifejezve.", en: "Elapsed time since the Big Bang expressed in Planck time units." }
+        };
+
+        const ILL_CARDS_52_PERMUTATIONS = {
+            sortVal: 67.9,
+            title: { hu: "52 lapos kártyapakli keverései (52!)", en: "52-card deck permutations (52!)" },
+            badge: "$8{,}07 \\cdot 10^{67}$",
+            desc: { hu: "Egy standard kártyapakli lehetséges sorrendjeinek száma: <b>80 658 175 ... (68 számjegy)</b>.", en: "Number of unique ways to order a standard deck of cards (68-digit number)." }
+        };
+
+        const ILL_RUBIK_5X5 = {
+            sortVal: 74.45,
+            title: { hu: "5×5×5 Rubik-kocka (Professor's Cube)", en: "5×5×5 Rubik's Cube (Professor's Cube)" },
+            badge: "$2{,}83 \\cdot 10^{74}$",
+            desc: { hu: "Az 5 rétegű Rubik-kocka lehetséges állapotainak száma: <b>2,83 × 10⁷⁴</b>.", en: "Unique states of the 5-layer Professor's Cube: <b>$2.83 \times 10^{74}$</b>." }
+        };
+
+        const ILL_AES_256 = {
+            sortVal: 77.06,
+            title: { hu: "AES-256 kriptográfiai kulcstér", en: "AES-256 key space" },
+            badge: "$1{,}15 \\cdot 10^{77}$",
+            desc: { hu: "A 256 bites AES titkosítás lehetséges kulcsainak száma ($2^{256} \approx 1{,}15 \times 10^{77}$).", en: "Total key variations for 256-bit AES encryption ($2^{256}$)." }
+        };
+
+        const ILL_SHA256 = {
+            sortVal: 77.06,
+            title: { hu: "SHA-256 kriptográfiai kulcstér", en: "SHA-256 cryptographic hash space" },
+            badge: "$1{,}15 \\cdot 10^{77}$",
+            desc: { hu: "A Bitcoin és a modern adatvédelem által használt hash-függvény lehetséges kimeneteinek száma ($2^{256}$).", en: "Total possible outputs of the SHA-256 hash function ($2^{256}$)." }
+        };
+
+        const ILL_GO_13X13 = {
+            sortVal: 79.3,
+            title: { hu: "13×13-as Go tábla állásai", en: "13×13 Go board positions" },
+            badge: "$\\sim 2 \\cdot 10^{79}$",
+            desc: { hu: "A kisebb, 13×13-as Go tábla szabályos pozícióinak száma épp a Googol ($10^{100}$) határa alatt marad.", en: "Legal board positions on a 13×13 Go board remain just below Googol ($10^{100}$)." }
+        };
+
+        const ILL_OBSERVABLE_UNIVERSE_ATOMS = {
+            sortVal: 80.0,
+            title: { hu: "A látható Univerzum atomjai", en: "Atoms in the observable Universe" },
+            badge: "$10^{80}$",
+            desc: { hu: "A megfigyelhető Univerzumban található valamennyi elemi részecske (barionok, elektronok) becsült száma.", en: "Estimated total elementary particles in the observable Universe." }
+        };
+
+        const ILL_OBSERVABLE_UNIVERSE_PHOTONS = {
+            sortVal: 90.0,
+            title: { hu: "Fotonok a megfigyelhető Univerzumban", en: "Photons in the observable Universe" },
+            badge: "$\\sim 10^{89} - 10^{90}$",
+            desc: { hu: "A kozmikus mikrohullámú háttérsugárzás és a csillagok által kibocsátott összes foton becsült száma a látható világegyetemben.", en: "Estimated total photons (including CMB radiation) in the observable Universe." }
+        };
+
+        const ILL_GOOGOL = {
+            sortVal: 100.0,
+            title: { hu: "Googol", en: "Googol" },
+            badge: "$10^{100}$",
+            desc: { hu: "1-es gomb után 100 darab nulla. Kasner matematikus 9 éves unokaöccse nevezte el.", en: "1 followed by 100 zeros. Named by mathematician Kasner's 9-year-old nephew." }
+        };
+
+        const ILL_RUBIK_6X6 = {
+            sortVal: 116.2,
+            title: { hu: "6×6×6 Rubik-kocka (V-Cube 6)", en: "6×6×6 Rubik's Cube (V-Cube 6)" },
+            badge: "$1{,}57 \\cdot 10^{116}$",
+            desc: { hu: "A 6-rétegű Rubik-kocka lehetséges állapotainak száma eléri az <b>1,57 × 10¹¹⁶</b>-at.", en: "Unique states of the 6-layer V-Cube 6 reach <b>$1.57 \times 10^{116}$</b>." }
+        };
+
+        const ILL_SHANNON_NUMBER = {
+            sortVal: 120.0,
+            title: { hu: "Shannon-szám (Sakk játékfa-komplexitás)", en: "Shannon number (Chess game tree)" },
+            badge: "$\\sim 10^{120}$",
+            desc: { hu: "Claude Shannon 1950-es becslése a lehetséges szabályos sakkjátszmák számára (40 lépéses átlagos meccshosszal).", en: "Claude Shannon's 1950 estimate for total possible chess games (~40-move average)." }
+        };
+
+        const ILL_RSA_512 = {
+            sortVal: 154.12,
+            title: { hu: "RSA-512 kulcstér", en: "RSA-512 key space" },
+            badge: "$1{,}34 \\cdot 10^{154}$",
+            desc: { hu: "Az 512 bites RSA titkosítás kulcstere ($2^{512} \approx 1{,}34 \times 10^{154}$).", en: "Key space size for 512-bit RSA encryption ($2^{512}$)." }
+        };
+
+        const ILL_RUBIK_7X7 = {
+            sortVal: 160.28,
+            title: { hu: "7×7×7 Rubik-kocka (V-Cube 7)", en: "7×7×7 Rubik's Cube (V-Cube 7)" },
+            badge: "$1{,}95 \\cdot 10^{160}$",
+            desc: { hu: "A 7-rétegű Rubik-kocka lehetséges állapotainak száma: <b>1,95 × 10¹⁶⁰</b>.", en: "Unique states of the 7-layer V-Cube 7: <b>$1.95 \times 10^{160}$</b>." }
+        };
+
+        const ILL_GO_19X19 = {
+            sortVal: 170.3,
+            title: { hu: "19×19-es Go tábla szabályos állásai", en: "19×19 Go board positions" },
+            badge: "$2{,}08 \\cdot 10^{170}$",
+            desc: { hu: "A 361 kereszteződéses Go tábla pontos szabályos pozícióinak száma (Tromp-Taylor számlálás).", en: "Exact legal board positions on a 19×19 Go grid (Tromp-Taylor count)." }
+        };
+
+        const ILL_HU_ANNUAL_INFLATION = {
+            sortVal: 174.0,
+            title: { hu: "1946 júliusi magyar infláció évesítve", en: "Annualized Hungarian inflation (July 1946)" },
+            badge: "$3 \\cdot 10^{174}\\%$",
+            desc: { hu: "Amikor a magyar hiperinfláció csúcsán az árak 15,3 óránként duplázódtak, ez egész évre kivetítve <b>3 × 10¹⁷⁴ %</b>-os rátát jelentett.", en: "Annualized peak hyperinflation in Hungary when prices doubled every 15.3 hours." }
+        };
+
+        const ILL_RUBIK_8X8 = {
+            sortVal: 217.54,
+            title: { hu: "8×8×8 Rubik-kocka állapottere", en: "8×8×8 Rubik's Cube state space" },
+            badge: "$3{,}52 \\cdot 10^{217}$",
+            desc: { hu: "A 8-rétegű Rubik-kocka lehetséges állásainak száma <b>3,52 × 10²¹⁷</b>.", en: "Unique states of the 8-layer Rubik's cube: <b>$3.52 \times 10^{217}$</b>." }
+        };
+
+        const ILL_RUBIK_9X9 = {
+            sortVal: 277.15,
+            title: { hu: "9×9×9 Rubik-kocka állapottere", en: "9×9×9 Rubik's Cube state space" },
+            badge: "$1{,}42 \\cdot 10^{277}$",
+            desc: { hu: "A 9-rétegű Rubik-kocka lehetséges állásainak száma <b>1,42 × 10²⁷⁷</b>.", en: "Unique states of the 9-layer Rubik's cube: <b>$1.42 \times 10^{277}$</b>." }
+        };
+
+        const ILL_RSA_1024 = {
+            sortVal: 308.25,
+            title: { hu: "RSA-1024 kulcstér", en: "RSA-1024 key space" },
+            badge: "$1{,}80 \\cdot 10^{308}$",
+            desc: { hu: "A 1024 bites RSA titkosítás kulcstere ($2^{1024} \approx 1{,}80 \times 10^{308}$).", en: "Key space size for 1024-bit RSA encryption ($2^{1024}$)." }
+        };
+
+        const ILL_RUBIK_10X10 = {
+            sortVal: 346.11,
+            title: { hu: "10×10×10 Rubik-kocka állapottere", en: "10×10×10 Rubik's Cube state space" },
+            badge: "$1{,}28 \\cdot 10^{346}$",
+            desc: { hu: "A 10-rétegű Rubik-kocka lehetséges állásainak száma eléri az <b>1,28 × 10³⁴⁶</b>-at.", en: "Unique states of the 10-layer Rubik's cube reach <b>$1.28 \times 10^{346}$</b>." }
+        };
+
+        const ILL_STRING_LANDSCAPE = {
+            sortVal: 500.0,
+            title: { hu: "Húrelméleti vákuumállapotok (String Landscape)", en: "String Theory vacuum states" },
+            badge: "$\\sim 10^{500}$",
+            desc: { hu: "A szuperhúr-elmélet 6/7 dimenziós kompaktifikációi által megengedett egyedi fizikai vákuumállapotok becsült száma.", en: "Estimated unique vacuum states in string theory compactifications." }
+        };
+
+        const ILL_RSA_2048 = {
+            sortVal: 616.5,
+            title: { hu: "RSA-2048 kulcstér", en: "RSA-2048 key space" },
+            badge: "$3{,}23 \\cdot 10^{616}$",
+            desc: { hu: "A 2048 bites RSA titkosítás lehetséges kulcsainak száma ($2^{2048} \approx 3{,}23 \times 10^{616}$).", en: "Key space size for 2048-bit RSA encryption ($2^{2048}$)." }
+        };
+
+        const ILL_GO_GAMES_NUMBER = {
+            sortVal: 700.0,
+            title: { hu: "Lehetséges Go-játszmák száma", en: "Total possible Go games" },
+            badge: "$\\sim 10^{700}$",
+            desc: { hu: "Egy 19×19-es táblán lejátszható összes lehetséges Go-parti becsült száma (a játékfa komplexitása).", en: "Game tree complexity estimate for all possible Go games on 19×19 board." }
+        };
+
+        const ILL_1000_FACTORIAL = {
+            sortVal: 2567.0,
+            title: { hu: "1000 faktoriális (1000!)", en: "1000 Factorial (1000!)" },
+            badge: "$\\approx 4{,}02 \\cdot 10^{2567}$",
+            desc: { hu: "1000 megkülönböztethető elem lehetséges sorrendjeinek száma (2568 számjegyű szám).", en: "Total permutations of 1000 distinct items (2568-digit number)." }
+        };
+
+        const ILL_QR_V40 = {
+            sortVal: 7118.0,
+            title: { hu: "Version 40 QR-kód kombinációi", en: "Version 40 QR code combinations" },
+            badge: "$2^{23648} \\approx 10^{7118}$",
+            desc: { hu: "A legnagyobb kapacitású, 40-es verziójú QR-kód rácsán kirakható egyedi bitmintázatok felső elméleti határa.", en: "Upper bound of unique bit patterns in a maximum capacity Version 40 QR code." }
+        };
+
+        const ILL_MEGAPIXEL_VARIATIONS = {
+            sortVal: 240824.0,
+            title: { hu: "Digitális képek állapottere (100 kpx)", en: "Digital image state space (100 kpx)" },
+            badge: "$256^{100000} \\approx 10^{240824}$",
+            desc: { hu: "Egy kis méretű ($316 \\times 316$ pixeles) RGB fotó lehetséges szín-kombinációinak száma.", en: "Total color variations for a small $316 \\times 316$ pixel RGB image." }
+        };
+
+        const ILL_ICO_32X32 = {
+            sortVal: 9864.0,
+            title: { hu: "32×32-es RGBA .ico ikonfájl állapottere", en: "32×32 RGBA icon state space" },
+            badge: "$2^{32768} \\approx 10^{9864}$",
+            desc: { hu: "Egy apró, 32×32 pixeles 32-bites színmélységű ikonlehetőségek teljes száma (egy 9865 számjegyű szám).", en: "Total possible 32-bit color icon combinations (a 9865-digit number)." }
+        };
+
+        const ILL_DIGITAL_DATA_EARTH = {
+            sortVal: 23.0,
+            title: { hu: "A Föld teljes digitális adatkészlete", en: "Earth's total digital data" },
+            badge: "$\\sim 10^{23}\\text{ bit}$",
+            desc: { hu: "Az emberiség által eltárolt és kezelt teljes digitális információmennyiség bitben kifejezve.", en: "Total digital information stored and managed by humanity in bits." }
+        };
+
+        const ILL_VIRUSES_EARTH = {
+            sortVal: 31.0,
+            title: { hu: "A Földön található összes vírus", en: "Total viruses on Earth" },
+            badge: { hu: "$\\sim 10^{31}$ vírus", en: "$\\sim 10^{31}$ viruses" },
+            desc: { hu: "A Földön élő vírusrészecskék becsült összessége (nagyságrenddel több, mint a Föld összes baktériuma).", en: "Estimated total viral particles on Earth (vastly outnumbering bacteria)." }
+        };
+
+        const ILL_EARTH_ATOMS_TOTAL = {
+            sortVal: 50.0,
+            title: { hu: "A Föld bolygó összes atoma", en: "Total atoms of planet Earth" },
+            badge: { hu: "$\\sim 10^{50}$ atom", en: "$\\sim 10^{50}$ atoms" },
+            desc: { hu: "A Föld teljes tömegét (kőzetmantráját, magját, óceánjait és légkörét) felépítő atomok becsült száma.", en: "Estimated total atoms composing Earth's core, mantle, oceans, and atmosphere." }
+        };
+
+        const ILL_ARCHIMEDES_SAND = {
+            sortVal: 63.0,
+            title: { hu: "Archimédész homokszámlálása (Pszammitész)", en: "Archimedes' Sand Reckoner" },
+            badge: { hu: "$\\sim 10^{63}$ homokszem", en: "$\\sim 10^{63}$ grains" },
+            desc: { hu: "Archimédész Kr. e. 300 körül számította ki azt a felső határt, amennyi homokszemre lenne szükség a teljes világegyetem színültig töltéséhez.", en: "Archimedes' ~300 BC estimate for grains of sand to fill the entire universe." }
+        };
+
+        const ILL_BLACK_HOLE_LIFETIME = {
+            sortVal: 106.0,
+            title: { hu: "Szupermasszív fekete lyukak élettartama", en: "Supermassive black hole lifetime" },
+            badge: { hu: "$\\sim 10^{106}\\text{ év}$", en: "$\\sim 10^{106}\\text{ years}$" },
+            desc: { hu: "A világegyetem leghosszabb életű objektumainak kiszámított elpárolgási ideje Hawking-sugárzás útján.", en: "Evaporation time of supermassive black holes via Hawking radiation." }
+        };
+
+        const ILL_ZIMBABWE_INFLATION = {
+            sortVal: 108.0,
+            title: { hu: "Zimbabwe hiperinflációjának csúcsa (2008)", en: "Peak Zimbabwean hyperinflation (2008)" },
+            badge: "$\\sim 10^{108}\\%$",
+            desc: { hu: "A zimbabwei dollár elért évesített áremelkedési rátája 2008 novemberében, amikor az árak 24 óránként duplázódtak.", en: "Annualized peak price inflation rate when prices doubled every 24 hours." }
+        };
+
+        const ILL_TSP_100 = {
+            sortVal: 157.97,
+            title: { hu: "Utazó ügynök probléma 100 városra (100!)", en: "Traveling Salesperson Problem for 100 cities" },
+            badge: "$100! \\approx 9{,}33 \\cdot 10^{157}$",
+            desc: { hu: "100 tetszőleges város közötti lehetséges bejárási útvonalak száma a klasszikus kombinatorikai optimalizálási feladatban.", en: "Total route permutations visiting 100 distinct cities." }
+        };
+
+        const ILL_UNIVERSE_PLANCK_VOL = {
+            sortVal: 186.0,
+            title: { hu: "Az Univerzum térfogata Planck-egységekben", en: "Universe volume in Planck units" },
+            badge: { hu: "$\\sim 10^{186}$ Planck-térfogat", en: "$\\sim 10^{186}$ Planck volumes" },
+            desc: { hu: "A megfigyelhető világegyetem teljes térfogata a fizika legkisebb értelmezhető térfogategységében kifejezve.", en: "Observable Universe volume expressed in fundamental Planck volume units." }
+        };
+
+        const ILL_RUBIK_20X20 = {
+            sortVal: 1400.0,
+            title: { hu: "20×20×20 Rubik-kocka állapottere", en: "20×20×20 Rubik's Cube state space" },
+            badge: "$\\sim 10^{1400}$",
+            desc: { hu: "A 20-rétegű Rubik-kocka lehetséges állásainak felfoghatatlanul óriási száma.", en: "Incomprehensibly vast number of unique combinations for a 20-layer Rubik's cube." }
+        };
+
+        const ILL_O_N_N_1000 = {
+            sortVal: 3000.0,
+            title: { hu: "O(N^N) futásidő N=1000 esetén", en: "O(N^N) time complexity for N=1000" },
+            badge: "$1000^{1000} = 10^{3000}$",
+            desc: { hu: "Egy $O(N^N)$ komplexitású algoritmus lépéseinek száma $N=1000$ bemeneti méretnél.", en: "Step count of an $O(N^N)$ algorithm at input size $N=1000$ ($10^{3000}$ operations)." }
+        };
+
+        const ILL_O_N_N_1M = {
+            sortVal: 6000000.0,
+            title: { hu: "1000000^1000000 futásidő-lépés", en: "1,000,000^1,000,000 computation steps" },
+            badge: "$10^{6000000}$",
+            desc: { hu: "Egy $O(N^N)$ algoritmus lépésszáma $N=1000000$ (egymillió) esetén — egy 6 millió számjegyű érték.", en: "Step count of an $O(N^N)$ algorithm for $N=1,000,000$ (a 6-million-digit number)." }
+        };
+
+        const ILL_LOTTERY_HISTORY = {
+            sortVal: 1e8,
+            title: { hu: "Minden lottóhúzás telitalálata a történelemben", en: "Winning every lottery jackpot in history" },
+            badge: "$10^{-10^8}$",
+            desc: { hu: "Annak az esélye, hogy a történelem összes lottóhúzásának mindegyikén egyetlen szelvénnyel játszva mindet eltaláljuk.", en: "Odds of hitting every single lottery jackpot in history with a single ticket each time." }
+        };
+
+        const ILL_RUBIK_49X49 = {
+            sortVal: 86708.0,
+            title: { hu: "Legnagyobb működő Rubik-kocka (49×49×49)", en: "Largest working Rubik's Cube (49×49×49)" },
+            badge: "$\\sim 10^{86708}$",
+            desc: { hu: "A Preston Alden által 2024-ben épített 13 839 alkatrészes rekordkocka állapottere (egy 86 708 számjegyű szám).", en: "State space of the record 13,839-piece 49×49×49 cube built by Preston Alden in 2024." }
+        };
+
+        const ILL_CARDS_SHUFFLE_RESET = {
+            sortVal: 1e11,
+            title: { hu: "A világ összes kártyapaklija gyári sorrendbe keveredik", en: "All world card decks shuffle into original order" },
+            badge: "$10^{-10^{11}}$",
+            desc: { hu: "Annak az esélye, hogy ha megkeverjük a világ összes francia kártyapakliját, mindegyik pont az eredeti gyári sorrendbe kerül.", en: "Odds that shuffling every card deck on Earth simultaneously returns all of them to factory order." }
+        };
+
+        const ILL_HAMLET_TYPING = {
+            sortVal: 1e15,
+            title: { hu: "A Föld minden embere véletlenül legépeli a Hamletet", en: "Every human on Earth randomly types Hamlet" },
+            badge: "$10^{-10^{15}}$",
+            desc: { hu: "Annak az esélye, hogy a Föld összes embere elkezd gépelni egy 130 000 karakteres szöveget, és mindenki véletlenül pont a Hamletet gépeli le.", en: "Probability that all 8 billion humans randomly type 130,000 characters and each produces Shakespeare's Hamlet." }
+        };
+
+        const ILL_WATER_BOIL_FREEZE = {
+            sortVal: 1e23,
+            title: { hu: "Pohár víz fele felforr, fele megfagy", en: "Glass of water half boils, half freezes" },
+            badge: "$10^{-10^{23}}$",
+            desc: { hu: "Annak a hőtani fluktuációnak az esélye, hogy egy pohár víz egyik fele spontán felforr, a másik fele pedig megfagy.", en: "Thermal fluctuation probability where one half of a water glass spontaneously boils while the other freezes." }
+        };
+
+        const ILL_MOVIE_SCREENS = {
+            sortVal: 1e23,
+            title: { hu: "Vissza a jövőbe trilógia megjelenése képernyőkön", en: "Back to the Future appearing on all screens" },
+            badge: "$10^{-10^{23}}$",
+            desc: { hu: "Annak az esélye, hogy a világ összes képernyőjén lejátszott véletlen zajból pixelpontosan kirajzolódik a Vissza a jövőbe trilógia.", en: "Probability that random noise playing across all world screens pixel-perfectly renders the Back to the Future trilogy." }
+        };
+
+        const ILL_COFFEE_BLACK_HOLE = {
+            sortVal: 1e25,
+            title: { hu: "Reggeli kávé fekete lyukká omlása", en: "Morning coffee collapsing into a black hole" },
+            badge: "$10^{-10^{25}}$",
+            desc: { hu: "Annak az esélye, hogy a reggeli kávé a kevergetés hatására spontán fekete lyukká változik.", en: "Odds that stirring a cup of morning coffee causes it to spontaneously collapse into a black hole." }
+        };
+
+        const ILL_OXYGEN_CORNER = {
+            sortVal: 1e26,
+            title: { hu: "Szoba oxigénmolekulái egy sarokba tömörülnek", en: "Room oxygen molecules rushing into one corner" },
+            badge: "$10^{-10^{26}}$",
+            desc: { hu: "Annak az esélye, hogy egy zárt szobában az összes oxigénmolekula spontán egy sarokba tömörül, és megfulladunk.", en: "Probability that all oxygen molecules in a room spontaneously gather in a single corner." }
+        };
+
+        const ILL_QUANTUM_TUNNEL = {
+            sortVal: 1e34,
+            title: { hu: "Ember spontán átjutása a betonfalon (Kvantumalagút)", en: "Human quantum tunneling through a concrete wall" },
+            badge: "$10^{-10^{34}}$",
+            desc: { hu: "Annak az esélye, hogy egy ember makroszkopikus kvantumalagutazással spontán átjut egy betonfalon.", en: "Probability of a human spontaneously quantum tunneling intact through a solid concrete wall." }
+        };
+
+        const ILL_SUMMER_BLIZZARD = {
+            sortVal: 1e39,
+            title: { hu: "Júliusi 40 fokos kánikulában 2 méteres hóvihar", en: "2-meter blizzard during a 40°C July heatwave" },
+            badge: "$10^{-10^{39}}$",
+            desc: { hu: "Mekkora az esélye annak, hogy 40 fokos júliusi kánikulában órákon belül 2 méteres hó borítja el egész Magyarországot.", en: "Probability of an extreme atmospheric fluctuation dumping 2 meters of snow during a 40°C July heatwave." }
+        };
+
+        const ILL_BOLTZMANN_BRAIN = {
+            sortVal: 1e50,
+            title: { hu: "Spontán Boltzmann-agy kialakulása", en: "Spontaneous Boltzmann brain formation" },
+            badge: "$10^{-10^{50}}$",
+            desc: { hu: "Egy tudatos Boltzmann-agy spontán termodinamikai fluktuációval történő vákuumbeli megszületésének esélye.", en: "Probability of a self-aware Boltzmann brain spontaneously fluctuating into existence out of thermal vacuum chaos." }
+        };
+
+        const ILL_GOOGOLPLEX = {
+            sortVal: 100.0,
+            title: { hu: "Googolplex", en: "Googolplex" },
+            badge: "$10^{10^{100}}$",
+            desc: { hu: "10 a Googol-adikon ($10^{10^{100}}$). Tömör leírásban annyi nullát tartalmaz, amennyi nem férne el a látható univerzumban.", en: "10 raised to the power of Googol ($10^{10^{100}}$). Writing out its zeros would require more digits than particles in the universe." }
+        };
+
+        const ILL_SKEWES = {
+            sortVal: 34.0,
+            title: { hu: "Skewes-szám (Első Skewes-szám)", en: "Skewes' number (First Skewes number)" },
+            badge: "$10^{10^{10^{34}}}$",
+            desc: { hu: "Stanley Skewes által 1933-ban megadott felső korlát arra a számra, ahol $\\pi(x) > \\text{li}(x)$ először teljesül (a Riemann-sejtés feltételezésével).", en: "Stanley Skewes' 1933 upper bound for the first point where $\\pi(x) > \\text{li}(x)$ assuming the Riemann hypothesis." }
+        };
+
+        const ILL_POINCARE = {
+            sortVal: 100.0,
+            title: { hu: "Poincaré-féle ismétlődési idő", en: "Poincaré recurrence time" },
+            badge: "$10^{10^{10^{100}}}$",
+            desc: { hu: "Az az időtartam, amely alatt egy zárt kvantumfizikai rendszer (vagy az Univerzum) spontán visszatér a kezdeti állapotához.", en: "Time required for a closed physical system (or universe) to spontaneously return to its initial state." }
+        };
+
+        /* =========================================================================
+           GLOBAL ILLUSTRATIONS MAPPING
+           ========================================================================= */
+        const ILLUSTRATIONS = [
+            { targets: [{ v1: 1, v2: 1, x: 1 }], ...ILL_UNIT },
+            { targets: [{ v1: 1, v2: 1, x: 1 }], ...ILL_RUBIK_1X1 },
+            { targets: [{ v1: 1, v2: 1, x: 1 }], ...ILL_DUST_1 },
+            { targets: [{ v1: 1, v2: 1, x: 2 }], ...ILL_BINARY },
+            { targets: [{ v1: 1, v2: 1, x: 2 }], ...ILL_DNA_HELIX },
+            { targets: [{ v1: 1, v2: 1, x: 3 }], ...ILL_TRINITY },
+            { targets: [{ v1: 1, v2: 1, x: 3 }], ...ILL_SPATIAL_DIMENSIONS },
+            { targets: [{ v1: 1, v2: 1, x: 4 }], ...ILL_DNA_BASES },
+            { targets: [{ v1: 1, v2: 1, x: 5 }], ...ILL_PLATONIC_SOLIDS },
+            { targets: [{ v1: 1, v2: 1, x: 6 }], ...ILL_RUBIK_FACES },
+            { targets: [{ v1: 1, v2: 1, x: 7 }], ...ILL_BIBLICAL_SEVEN },
+            { targets: [{ v1: 1, v2: 1, x: 7 }], ...ILL_RAINBOW },
+            { targets: [{ v1: 1, v2: 1, x: 8 }], ...ILL_PLANETS },
+            { targets: [{ v1: 1, v2: 1, x: 9 }], ...ILL_GREEK_MUSES },
+            { targets: [{ v1: 1, v2: 1, x: 10 }, { v1: 2, v2: 1, x: 1 }], ...ILL_FINGERS },
+
+            { targets: [{ v1: 1, v2: 2, x: 2 }], ...ILL_MOON_WALKERS },
+            { targets: [{ v1: 1, v2: 2, x: 2 }], ...ILL_AMINO_ACIDS },
+            { targets: [{ v1: 1, v2: 2, x: 3 }], ...ILL_CHRIST_AGE },
+            { targets: [{ v1: 1, v2: 2, x: 4 }], ...ILL_BIBLICAL_FAST },
+            { targets: [{ v1: 1, v2: 2, x: 4 }], ...ILL_QUARANTINE },
+            { targets: [{ v1: 1, v2: 2, x: 5 }], ...ILL_HUMAN_CHROMOSOMES },
+            { targets: [{ v1: 1, v2: 2, x: 6 }], ...ILL_CHESSBOARD_SQUARES },
+            { targets: [{ v1: 1, v2: 2, x: 7 }], ...ILL_SEVENTY_DISCIPLES },
+            { targets: [{ v1: 1, v2: 2, x: 7 }], ...ILL_HUMAN_LIFESPAN },
+            { targets: [{ v1: 1, v2: 2, x: 8 }], ...ILL_AROUND_WORLD_80_DAYS },
+            { targets: [{ v1: 1, v2: 2, x: 9 }], ...ILL_PIANO_KEYS },
+            { targets: [{ v1: 1, v2: 2, x: 10 }, { v1: 2, v2: 1, x: 2 }], ...ILL_HUNDRED },
+            { targets: [{ v1: 1, v2: 2, x: 10 }, { v1: 2, v2: 1, x: 2 }], ...ILL_ELO_100 },
+
+            { targets: [{ v1: 1, v2: 3, x: 2 }], ...ILL_HUMAN_BONES },
+            { targets: [{ v1: 1, v2: 3, x: 3 }], ...ILL_SPARTANS },
+            { targets: [{ v1: 1, v2: 3, x: 4 }], ...ILL_SUN_MOON_RATIO },
+            { targets: [{ v1: 1, v2: 3, x: 5 }], ...ILL_PAPER_REAM },
+            { targets: [{ v1: 1, v2: 3, x: 6 }], ...ILL_HUMAN_MUSCLES },
+            { targets: [{ v1: 1, v2: 3, x: 7 }], ...ILL_ELO_700 },
+            { targets: [{ v1: 1, v2: 3, x: 8 }], ...ILL_BURJ_KHALIFA },
+            { targets: [{ v1: 1, v2: 3, x: 9 }], ...ILL_LAVA_TEMP },
+            { targets: [{ v1: 1, v2: 3, x: 10 }, { v1: 2, v2: 1, x: 3 }], ...ILL_DUST_1K },
+            { targets: [{ v1: 1, v2: 3, x: 10 }, { v1: 2, v2: 1, x: 3 }], ...ILL_THOUSAND_SEC },
+
+            { targets: [{ v1: 2, v2: 1, x: 4 }], ...ILL_MYRIAD },
+            { targets: [{ v1: 2, v2: 1, x: 5 }], ...ILL_HAIRS_100K },
+            { targets: [{ v1: 2, v2: 1, x: 6 }], ...ILL_DUST_1M },
+            { targets: [{ v1: 2, v2: 1, x: 6 }], ...ILL_MILLION_SEC },
+            { targets: [{ v1: 2, v2: 1, x: 6 }], ...ILL_RUBIK_2X2 },
+            { targets: [{ v1: 2, v2: 1, x: 7 }], ...ILL_POPULATION_HU },
+            { targets: [{ v1: 2, v2: 1, x: 7 }], ...ILL_MEGAPIXEL_10M },
+            { targets: [{ v1: 2, v2: 1, x: 7 }], ...ILL_LOTTERY_5_90 },
+            { targets: [{ v1: 2, v2: 1, x: 8 }], ...ILL_RETINA_RODS },
+            { targets: [{ v1: 2, v2: 1, x: 9 }], ...ILL_DUST_1B },
+            { targets: [{ v1: 2, v2: 1, x: 9 }], ...ILL_BILLION_SEC },
+            { targets: [{ v1: 2, v2: 1, x: 9 }], ...ILL_IPV4_ADDRESSES },
+            { targets: [{ v1: 2, v2: 1, x: 10 }, { v1: 2, v2: 2, x: 1 }], ...ILL_EARTH_POPULATION },
+
+            { targets: [{ v1: 2, v2: 2, x: 1 }], ...ILL_TREES_EARTH },
+            { targets: [{ v1: 2, v2: 2, x: 1 }], ...ILL_TRILLION_SEC },
+            { targets: [{ v1: 2, v2: 2, x: 1 }], ...ILL_DUST_TRILLION },
+            { targets: [{ v1: 2, v2: 2, x: 1 }], ...ILL_HU_GDP },
+            { targets: [{ v1: 2, v2: 2, x: 1 }], ...ILL_MILKYWAY_STARS },
+            { targets: [{ v1: 2, v2: 2, x: 1 }], ...ILL_USA_GDP },
+            { targets: [{ v1: 2, v2: 2, x: 1 }], ...ILL_HUMAN_CELLS },
+            { targets: [{ v1: 2, v2: 2, x: 1 }], ...ILL_GLOBAL_GDP },
+            { targets: [{ v1: 2, v2: 2, x: 1 }], ...ILL_GLOBAL_DEBT },
+            { targets: [{ v1: 2, v2: 2, x: 1 }], ...ILL_MAC_ADDRESS },
+            { targets: [{ v1: 2, v2: 2, x: 1 }], ...ILL_BRAIN_SYNAPSES },
+
+            { targets: [{ v1: 2, v2: 2, x: 1 }], ...ILL_DUST_QUADRILLION },
+            { targets: [{ v1: 2, v2: 2, x: 1 }], ...ILL_LIGHTYEAR_METERS },
+            { targets: [{ v1: 2, v2: 2, x: 1 }], ...ILL_ANTS_EARTH },
+            { targets: [{ v1: 2, v2: 2, x: 1 }], ...ILL_DUST_QUINTILLION },
+            { targets: [{ v1: 2, v2: 2, x: 1 }], ...ILL_RUBIK_3X3 },
+            { targets: [{ v1: 2, v2: 2, x: 2 }], ...ILL_GRAIN_SAND_ATOMS },
+            { targets: [{ v1: 2, v2: 2, x: 2 }], ...ILL_PENGO_100M_B },
+            { targets: [{ v1: 2, v2: 2, x: 2 }], ...ILL_BEACH_SAND_GRAINS },
+            { targets: [{ v1: 2, v2: 2, x: 2 }], ...ILL_AVOGADRO },
+            { targets: [{ v1: 2, v2: 2, x: 2 }], ...ILL_DIGITAL_DATA_EARTH },
+            { targets: [{ v1: 2, v2: 2, x: 2 }], ...ILL_DUST_SEXTILLION },
+            { targets: [{ v1: 2, v2: 2, x: 2 }], ...ILL_DUST_SEPTILLION },
+            { targets: [{ v1: 2, v2: 2, x: 2 }], ...ILL_DUST_OCTILLION },
+            { targets: [{ v1: 2, v2: 2, x: 3 }], ...ILL_OBSERVABLE_UNIVERSE_DIAMETER },
+            { targets: [{ v1: 2, v2: 2, x: 3 }], ...ILL_HUMAN_BODY_ATOMS },
+            { targets: [{ v1: 2, v2: 2, x: 3 }], ...ILL_HU_INFLATION_CUMULATIVE },
+            { targets: [{ v1: 2, v2: 2, x: 3 }], ...ILL_PENGO_FORINT_EXCHANGE },
+            { targets: [{ v1: 2, v2: 2, x: 3 }], ...ILL_YUGOSLAV_DINAR },
+            { targets: [{ v1: 2, v2: 2, x: 3 }], ...ILL_SUN_MASS },
+            { targets: [{ v1: 2, v2: 2, x: 3 }], ...ILL_DUST_NONILLION },
+            { targets: [{ v1: 2, v2: 2, x: 3 }], ...ILL_DUST_DECILLION },
+            { targets: [{ v1: 2, v2: 2, x: 3 }], ...ILL_VIRUSES_EARTH },
+            { targets: [{ v1: 2, v2: 2, x: 4 }], ...ILL_UUID },
+            { targets: [{ v1: 2, v2: 2, x: 4 }], ...ILL_AES_128 },
+            { targets: [{ v1: 2, v2: 2, x: 4 }], ...ILL_BIOMASS_DNA_BASE_PAIRS },
+            { targets: [{ v1: 2, v2: 2, x: 4 }], ...ILL_IPV6 },
+            { targets: [{ v1: 2, v2: 2, x: 4 }], ...ILL_CHESS_LEGAL_POSITIONS },
+            { targets: [{ v1: 2, v2: 2, x: 5 }], ...ILL_CHESS_POSITIONS_UPPER },
+            { targets: [{ v1: 2, v2: 2, x: 5 }], ...ILL_RUBIK_4X4 },
+            { targets: [{ v1: 2, v2: 2, x: 5 }], ...ILL_CONJECTURE_COUNTEREXAMPLE },
+            { targets: [{ v1: 2, v2: 2, x: 5 }], ...ILL_EARTH_ATOMS_TOTAL },
+            { targets: [{ v1: 2, v2: 2, x: 6 }], ...ILL_PLANCK_TIMES },
+            { targets: [{ v1: 2, v2: 2, x: 6 }], ...ILL_ARCHIMEDES_SAND },
+            { targets: [{ v1: 2, v2: 2, x: 7 }], ...ILL_CARDS_52_PERMUTATIONS },
+            { targets: [{ v1: 2, v2: 2, x: 7 }], ...ILL_RUBIK_5X5 },
+            { targets: [{ v1: 2, v2: 2, x: 8 }], ...ILL_AES_256 },
+            { targets: [{ v1: 2, v2: 2, x: 8 }], ...ILL_SHA256 },
+            { targets: [{ v1: 2, v2: 2, x: 8 }], ...ILL_GO_13X13 },
+            { targets: [{ v1: 2, v2: 2, x: 8 }], ...ILL_OBSERVABLE_UNIVERSE_ATOMS },
+            { targets: [{ v1: 2, v2: 2, x: 9 }], ...ILL_OBSERVABLE_UNIVERSE_PHOTONS },
+            { targets: [{ v1: 2, v2: 2, x: 10 }], ...ILL_GOOGOL },
+            { targets: [{ v1: 2, v2: 2, x: 10 }], ...ILL_RUBIK_6X6 },
+            { targets: [{ v1: 2, v2: 2, x: 10 }], ...ILL_SHANNON_NUMBER },
+            { targets: [{ v1: 2, v2: 2, x: 10 }], ...ILL_RSA_512 },
+            { targets: [{ v1: 2, v2: 2, x: 10 }], ...ILL_RUBIK_7X7 },
+            { targets: [{ v1: 2, v2: 2, x: 10 }], ...ILL_GO_19X19 },
+            { targets: [{ v1: 2, v2: 2, x: 10 }], ...ILL_HU_ANNUAL_INFLATION },
+            { targets: [{ v1: 2, v2: 2, x: 10 }], ...ILL_BLACK_HOLE_LIFETIME },
+            { targets: [{ v1: 2, v2: 2, x: 10 }], ...ILL_ZIMBABWE_INFLATION },
+            { targets: [{ v1: 2, v2: 2, x: 10 }], ...ILL_TSP_100 },
+            { targets: [{ v1: 2, v2: 2, x: 10 }], ...ILL_UNIVERSE_PLANCK_VOL },
+
+            { targets: [{ v1: 2, v2: 3, x: 2 }], ...ILL_RUBIK_8X8 },
+            { targets: [{ v1: 2, v2: 3, x: 2 }], ...ILL_RUBIK_9X9 },
+            { targets: [{ v1: 2, v2: 3, x: 3 }], ...ILL_RSA_1024 },
+            { targets: [{ v1: 2, v2: 3, x: 3 }], ...ILL_RUBIK_10X10 },
+            { targets: [{ v1: 2, v2: 3, x: 5 }], ...ILL_STRING_LANDSCAPE },
+            { targets: [{ v1: 2, v2: 3, x: 6 }], ...ILL_RSA_2048 },
+            { targets: [{ v1: 2, v2: 3, x: 7 }], ...ILL_GO_GAMES_NUMBER },
+            { targets: [{ v1: 2, v2: 3, x: 10 }], ...ILL_1000_FACTORIAL },
+            { targets: [{ v1: 2, v2: 3, x: 10 }], ...ILL_QR_V40 },
+            { targets: [{ v1: 2, v2: 3, x: 10 }], ...ILL_ICO_32X32 },
+            { targets: [{ v1: 2, v2: 3, x: 10 }], ...ILL_MEGAPIXEL_VARIATIONS },
+            { targets: [{ v1: 2, v2: 3, x: 10 }], ...ILL_RUBIK_20X20 },
+            { targets: [{ v1: 2, v2: 3, x: 10 }], ...ILL_O_N_N_1000 },
+            { targets: [{ v1: 2, v2: 3, x: 10 }], ...ILL_O_N_N_1M },
+
+            { targets: [{ v1: 3, v2: 1, x: 5 }], ...ILL_RUBIK_49X49 },
+            { targets: [{ v1: 3, v2: 1, x: 8 }], ...ILL_LOTTERY_HISTORY },
+
+            { targets: [{ v1: 3, v2: 2, x: 1 }], ...ILL_CARDS_SHUFFLE_RESET },
+            { targets: [{ v1: 3, v2: 2, x: 1 }], ...ILL_HAMLET_TYPING },
+            { targets: [{ v1: 3, v2: 2, x: 2 }], ...ILL_WATER_BOIL_FREEZE },
+            { targets: [{ v1: 3, v2: 2, x: 2 }], ...ILL_MOVIE_SCREENS },
+            { targets: [{ v1: 3, v2: 2, x: 2 }], ...ILL_COFFEE_BLACK_HOLE },
+            { targets: [{ v1: 3, v2: 2, x: 2 }], ...ILL_OXYGEN_CORNER },
+            { targets: [{ v1: 3, v2: 2, x: 3 }], ...ILL_QUANTUM_TUNNEL },
+            { targets: [{ v1: 3, v2: 2, x: 3 }], ...ILL_SUMMER_BLIZZARD },
+            { targets: [{ v1: 3, v2: 2, x: 5 }], ...ILL_BOLTZMANN_BRAIN },
+            { targets: [{ v1: 3, v2: 2, x: 10 }], ...ILL_GOOGOLPLEX },
+
+            { targets: [{ v1: 4, v2: 2, x: 3 }], ...ILL_SKEWES },
+            { targets: [{ v1: 4, v2: 2, x: 10 }], ...ILL_POINCARE }
+        ];
+
+        /* =========================================================================
+           STATE MANAGEMENT & NAVIGATION LOGIC
+           ========================================================================= */
+        function isStateSkipped(v1Val, v2Val, xVal) {
+            if (v1Val === 1 && v2Val === 2 && xVal === 1) return true;
+            if (v1Val === 1 && v2Val === 3 && xVal === 1) return true;
+
+            if (v1Val === 2 && v2Val === 1 && xVal <= 3) return true;
+            if (v1Val === 2 && v2Val === 2 && xVal === 1) return true;
+            if (v1Val === 2 && v2Val === 3 && xVal === 1) return true;
+
+            if (v1Val === 3 && v2Val === 1 && xVal <= 3) return true;
+            if (v1Val === 3 && v2Val === 2 && xVal === 1) return true;
+            if (v1Val === 3 && v2Val === 3 && xVal === 1) return true;
+
+            if (v1Val === 4 && v2Val === 1 && xVal <= 3) return true;
+            if (v1Val === 4 && v2Val === 2 && xVal === 1) return true;
+            if (v1Val === 4 && v2Val === 3 && xVal === 1) return true;
+
+            return false;
+        }
+
+        function buildValidStates() {
+            const list = [];
+            for (let v1Val = 1; v1Val <= 4; v1Val++) {
+                for (let v2Val = 1; v2Val <= 3; v2Val++) {
+                    for (let xVal = 1; xVal <= 10; xVal++) {
+                        if (!isStateSkipped(v1Val, v2Val, xVal)) {
+                            list.push({ v1: v1Val, v2: v2Val, x: xVal });
+                        }
+                    }
+                }
+            }
+            return list;
+        }
+
+        const VALID_STATES = buildValidStates();
+        let currentState = { v1: 1, v2: 1, x: 1 };
+
+        function getStateScore(st) {
+            const val = st.x * Math.pow(10, st.v2 - 1);
+            if (st.v1 === 1) {
+                return Math.log10(val);
+            } else if (st.v1 === 2) {
+                return val;
+            } else if (st.v1 === 3) {
+                return 1000 + val;
+            } else if (st.v1 === 4) {
+                return 2000 + val;
+            }
+            return 0;
+        }
+
+        function getCurrentStateIndex() {
+            const exactIdx = VALID_STATES.findIndex(st => st.v1 === currentState.v1 && st.v2 === currentState.v2 && st.x === currentState.x);
+            if (exactIdx !== -1) return exactIdx;
+
+            const targetScore = getStateScore(currentState);
+            let bestIdx = 0;
+            let minDiff = Infinity;
+
+            VALID_STATES.forEach((st, idx) => {
+                const diff = Math.abs(getStateScore(st) - targetScore);
+                if (diff < minDiff) {
+                    minDiff = diff;
+                    bestIdx = idx;
+                }
+            });
+
+            return bestIdx;
+        }
+
+        function applyStateIndex(index) {
+            const safeIdx = Math.max(0, Math.min(VALID_STATES.length - 1, index));
+            currentState = { ...VALID_STATES[safeIdx] };
+            updateUI();
+        }
+
+        function handlePillV1(val) {
+            currentState.v1 = val;
+            updateUI();
+        }
+
+        function handlePillV2(val) {
+            currentState.v2 = val;
+            updateUI();
+        }
+
+        function handleSliderChange() {
+            currentState.x = parseInt(document.getElementById('x-slider').value);
+            updateUI();
+        }
+
+        function stepNext() {
+            const currentIdx = getCurrentStateIndex();
+            applyStateIndex(currentIdx + 1);
+        }
+
+        function stepPrev() {
+            const currentIdx = getCurrentStateIndex();
+            applyStateIndex(currentIdx - 1);
+        }
+
+        function goHome() {
+            applyStateIndex(0);
+        }
+
+        function goEnd() {
+            applyStateIndex(VALID_STATES.length - 1);
+        }
+
+        /* Keyboard Event Listener */
+        window.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowLeft') {
+                e.preventDefault();
+                stepPrev();
+            } else if (e.key === 'ArrowRight') {
+                e.preventDefault();
+                stepNext();
+            } else if (e.key === 'Home') {
+                e.preventDefault();
+                goHome();
+            } else if (e.key === 'End') {
+                e.preventDefault();
+                goEnd();
+            }
+        });
+
+        function updateUI() {
+            document.getElementById('x-slider').value = currentState.x;
+            updatePillUI(currentState.v1, currentState.v2);
+            renderCalculations(currentState);
+        }
+
+        function updatePillUI(v1Val, v2Val) {
+            document.querySelectorAll('.control-group:nth-child(1) .pill-btn').forEach((btn, idx) => {
+                btn.classList.toggle('active', idx + 1 === v1Val);
+            });
+            document.getElementById('v1-desc').innerText = UI_TEXTS[currentLang].v1_descs[v1Val - 1];
+
+            document.querySelectorAll('.v2-group .pill-btn').forEach((btn, idx) => {
+                btn.classList.toggle('active', idx + 1 === v2Val);
+            });
+            document.getElementById('v2-desc').innerText = UI_TEXTS[currentLang].v2_descs[v2Val - 1];
+        }
+
+        function renderCalculations(st) {
+            document.getElementById('slider-val').innerText = st.x;
+
+            const scaleMultiplier = Math.pow(10, st.v2 - 1);
+            const expVal = scaleMultiplier * st.x;
+
+            let outputHtml = '';
+            if (st.v1 === 1) {
+                outputHtml = `$$${expVal.toLocaleString(currentLang === 'hu' ? 'hu-HU' : 'en-US')}$$`;
+            } else if (st.v1 === 2) {
+                outputHtml = `$$10^{${expVal}}$$`;
+            } else if (st.v1 === 3) {
+                outputHtml = `$$10^{10^{${expVal}}}$$`;
+            } else if (st.v1 === 4) {
+                outputHtml = `$$10^{10^{10^{${expVal}}}}$$`;
+            }
+
+            const towerElem = document.getElementById('tower-output');
+            towerElem.innerHTML = outputHtml;
+
+            /* Filter matching illustrations for state */
+            const matchingIllustrations = ILLUSTRATIONS.filter(item => {
+                return item.targets.some(t => t.v1 === st.v1 && t.v2 === st.v2 && t.x === st.x);
+            });
+
+            matchingIllustrations.sort((a, b) => (a.sortVal || 0) - (b.sortVal || 0));
+
+            const container = document.getElementById('illustrations-container');
+            const rangeBadge = document.getElementById('range-badge');
+
+            rangeBadge.innerText = `${UI_TEXTS[currentLang].gear_prefix}(${st.v1}, ${st.v2}, ${st.x})`;
+
+            if (matchingIllustrations.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        ${UI_TEXTS[currentLang].empty_state}
+                    </div>
+                `;
+            } else {
+                container.innerHTML = matchingIllustrations.map(item => `
+                    <div class="illustration-card">
+                        <div class="card-top-row">
+                            <span class="card-title">${getText(item.title)}</span>
+                            <span class="card-badge">${getText(item.badge)}</span>
+                        </div>
+                        <div class="card-desc">${getText(item.desc)}</div>
+                    </div>
+                `).join('');
+            }
+
+            /* MathJax re-render */
+            if (window.MathJax && MathJax.typesetPromise) {
+                MathJax.typesetPromise([towerElem, container]).catch((err) => console.error(err));
+            }
+        }
+
+        // Initialize
+        setLanguage('hu');
+    </script>
+</body>
+</html>
