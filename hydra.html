@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hydra Game</title>
+    <style>
+        body { font-family: system-ui, sans-serif; background: #1e1e1e; color: #eee; margin: 10px; font-size: 14px; }
+        .panel { background: #2d2d2d; padding: 10px 15px; border-radius: 6px; margin-bottom: 10px; }
+        .header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
+        h1 { margin: 0; font-size: 1.5em; color: #4CAF50; }
+        .controls { display: flex; align-items: center; gap: 10px; }
+        input[type="number"] { width: 40px; padding: 4px; background: #333; color: white; border: 1px solid #555; border-radius: 4px; text-align: center; }
+        .btn { background: #4CAF50; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-weight: bold; }
+        .btn:hover { background: #45a049; }
+        .btn-cut { background: #e74c3c; padding: 2px 6px; font-size: 0.85em; }
+        .btn-cut:hover { background: #c0392b; }
+        
+        .stats { display: flex; gap: 10px; }
+        .stat { background: #333; padding: 8px; border-radius: 4px; border-left: 3px solid #4CAF50; flex: 1; text-align: center; line-height: 1.2; }
+        .stat strong { display: block; font-size: 1.2em; color: #fff; margin-top: 2px; }
+        
+        details { font-size: 0.85em; color: #aaa; margin-top: 10px; }
+        summary { cursor: pointer; color: #81c784; font-weight: bold; }
+        
+        #tree-container { background: #252525; padding: 15px; border-radius: 6px; overflow: auto; max-height: 70vh; border: 1px solid #333; }
+        ul { padding-left: 18px; margin: 4px 0; border-left: 1px dashed #555; list-style: none; }
+        li { margin: 4px 0; display: flex; align-items: center; gap: 6px; }
+        
+        .node-root { color: #81c784; font-weight: bold; font-size: 1.1em; }
+        .node-neck { font-size: 0.8em; padding: 2px 6px; border-radius: 10px; background: #1b5e20; color: #a5d6a7; border: 1px solid #2e7d32; }
+        .node-head { font-size: 0.85em; color: #ff8a80; }
+        
+        .msg { text-align: center; padding: 20px; }
+        .msg h2 { color: #ffd700; margin: 0 0 10px 0; }
+        .msg p { color: #a5d6a7; margin: 0; font-size: 0.9em; }
+    </style>
+</head>
+<body>
+
+<div class="panel header">
+    <h1>🐉 Hydra</h1>
+    <div class="controls">
+        <label>Height (Default 3): <input type="number" id="h-input" value="3" min="1" max="4"></label>
+        <button class="btn" id="start-btn">Restart</button>
+    </div>
+    <details>
+        <summary>Rules</summary>
+        Cut a head (leaf). If attached to a neck, the neck grows <em>N</em> copies out of its grandparent. <em>N</em> increases by 1 per cut. Height > 3 exceeds Graham's number limits.
+    </details>
+</div>
+
+<div class="stats panel">
+    <div class="stat">Step (N) <strong id="val-step">1</strong></div>
+    <div class="stat">Live Nodes <strong id="val-nodes">0</strong></div>
+    <div class="stat">Record Nodes <strong id="val-max-nodes">0</strong></div>
+    <div class="stat">Record Kills <strong id="val-max-kills">0</strong></div>
+</div>
+
+<div id="tree-container"></div>
+
+<script>
+    let root = { children: [] }, step = 1, startH = 3;
+    let maxNodes = 0, maxKills = 0;
+    const MAX_CUTS = { 1: 1, 2: 3, 3: 37 };
+
+    function init() {
+        startH = parseInt(document.getElementById('h-input').value) || 3;
+        if (startH > 3 && !confirm("Height 4+ grows too fast to render visually. Continue?")) {
+            startH = 3; document.getElementById('h-input').value = 3;
+        }
+        
+        root = { children: [] };
+        let curr = root;
+        for (let i = 0; i < startH; i++) {
+            let child = { children: [] };
+            curr.children.push(child);
+            curr = child;
+        }
+        step = 1;
+        update();
+    }
+
+    const clone = n => ({ children: n.children.map(clone) });
+    const getPath = (n, p) => p.reduce((curr, i) => curr.children[i], n);
+
+    function cut(path) {
+        if (path.length === 1) {
+            root.children.splice(path[0], 1);
+        } else {
+            let gp = getPath(root, path.slice(0, -2));
+            let p = gp.children[path[path.length - 2]];
+            p.children.splice(path[path.length - 1], 1);
+            for (let i = 0; i < step; i++) gp.children.push(clone(p));
+        }
+        step++;
+        update();
+    }
+
+    function count(n) {
+        return 1 + n.children.reduce((sum, c) => sum + count(c), 0);
+    }
+
+    function update() {
+        let nodes = count(root);
+        if (nodes > maxNodes) maxNodes = nodes;
+        if (nodes === 1 && step > 1) maxKills = Math.max(maxKills, step - 1);
+        
+        document.getElementById('val-step').innerText = step;
+        document.getElementById('val-nodes').innerText = nodes;
+        document.getElementById('val-max-nodes').innerText = maxNodes;
+        document.getElementById('val-max-kills').innerText = maxKills;
+        render();
+    }
+
+    function buildDOM(node, path) {
+        let ul = document.createElement('ul');
+        node.children.forEach((c, i) => {
+            let li = document.createElement('li');
+            let p = [...path, i];
+            
+            if (!c.children.length) {
+                let b = document.createElement('button');
+                b.className = 'btn btn-cut'; b.innerText = '✂️';
+                b.onclick = () => cut(p);
+                li.append(b, Object.assign(document.createElement('span'), {className:'node-head', innerText:'Head'}));
+            } else {
+                li.append(Object.assign(document.createElement('span'), {className:'node-neck', innerText:'Neck'}), buildDOM(c, p));
+            }
+            ul.append(li);
+        });
+        return ul;
+    }
+
+    function render() {
+        const c = document.getElementById('tree-container');
+        c.innerHTML = '';
+        
+        if (!root.children.length) {
+            let cuts = step - 1;
+            let sub = (MAX_CUTS[startH] === cuts) ? `Max series for Hydra(${startH}) reached!` : "Play again to beat your record.";
+            c.innerHTML = `<div class="msg"><h2>🎉 Defeated in ${cuts} cuts!</h2><p>${sub}</p></div>`;
+            return;
+        }
+        
+        if (count(root) > 2000) {
+            c.innerHTML = `<div class="msg"><h2 style="color:#e74c3c">⚠️ Render Suspended</h2><p>Over 2000 nodes. Game logic continues, but UI is paused to prevent freezing.</p></div>`;
+            return;
+        }
+        
+        c.append(Object.assign(document.createElement('div'), {className:'node-root', innerText:'🌳 Root'}), buildDOM(root, []));
+    }
+
+    document.getElementById('start-btn').onclick = init;
+    init();
+</script>
+</body>
+</html>
