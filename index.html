@@ -510,6 +510,13 @@
             desc: { hu: "Pontosan <b>16,6 perc</b> — egy kávészünet vagy egy rövid, kellemes séta időtartama.", en: "Exactly <b>16.6 minutes</b> — a coffee break or a brief pleasant walk." }
         };
 
+        const ILL_ROYAL_FLUSH = {
+            sortVal: 5.81,
+            title: { hu: "Royal flush esélye (52 lapos kártya)", en: "Royal flush odds (52-card deck)" },
+            badge: "$1:649\\,740$",
+            desc: { hu: "Annak a valószínűsége, hogy egy standard 52 lapos pakliból 5 lapot húzva azonnal egy Royal flush-t kapunk.", en: "Probability of drawing a Royal flush immediately from a standard 52-card deck." }
+        };
+
         const ILL_DUST_1M = {
             sortVal: 6.0,
             title: { hu: "1 millió porszem (térfogat)", en: "1 million dust grains (Volume)" },
@@ -629,6 +636,13 @@
             desc: { hu: "Egy mai (2026) csúcskategóriás okostelefon processzorában (pl. Apple A17 Pro) mintegy <b>19 milliárd tranzisztor</b> dolgozik a számítások elvégzésén.", en: "A modern (2026) high-end smartphone processor (e.g., Apple A17 Pro) contains roughly 19 billion transistors." }
         };
 
+        const ILL_MILKYWAY_STARS = {
+            sortVal: 11.31,
+            title: { hu: "Csillagok a Tejútrendszerben", en: "Stars in the Milky Way" },
+            badge: "$10^{11}$–$4\\cdot 10^{11}$",
+            desc: { hu: "A saját galaxisunkban, a Tejútrendszerben található csillagok becsült száma (kb. <b>10¹¹ – 4×10¹¹</b>).", en: "Estimated number of stars in our home galaxy, the Milky Way (~<b>10¹¹ – 4×10¹¹</b>)." }
+        };
+
         const ILL_HU_GDP = {
             sortVal: 11.38,
             title: { hu: "Magyarország éves GDP-je (2025)", en: "Annual GDP of Hungary (2025)" },
@@ -636,11 +650,11 @@
             desc: { hu: "Magyarország éves bruttó hazai terméke kb. <b>240 milliárd USD</b> ($2,4 \\cdot 10^{11}\\,\\text{USD}$).", en: "Hungary's annual Gross Domestic Product is ~$240\\text{ billion USD}$ ($2.4 \times 10^{11}\\text{USD}$)." }
         };
 
-        const ILL_MILKYWAY_STARS = {
-            sortVal: 11.31,
-            title: { hu: "Csillagok a Tejútrendszerben", en: "Stars in the Milky Way" },
-            badge: "$10^{11}$–$4\\cdot 10^{11}$",
-            desc: { hu: "A saját galaxisunkban, a Tejútrendszerben található csillagok becsült száma (kb. <b>10¹¹ – 4×10¹¹</b>).", en: "Estimated number of stars in our home galaxy, the Milky Way (~<b>10¹¹ – 4×10¹¹</b>)." }
+        const ILL_LIGHT_1MM = {
+            sortVal: 11.47,
+            title: { hu: "A fény utazási ideje 1 mm-en", en: "Time for light to travel 1 mm" },
+            badge: "$3{,}33 \\cdot 10^{-12}\\,\\text{s}$",
+            desc: { hu: "A fény vákuumban kb. 3,33 pikomásodperc alatt tesz meg egy millimétert. Ennek reciproka elképesztő: <b>egy másodperc alatt 300 milliárd ($\\mathbf{3 \\cdot 10^{11}}$) millimétert</b> tesz meg.", en: "Light takes ~3.33 picoseconds to travel 1 mm in vacuum. Its reciprocal means it travels <b>300 billion ($\\mathbf{3 \\cdot 10^{11}}$) millimeters</b> in one second." }
         };
 
         const ILL_TREES_EARTH = {
@@ -734,6 +748,20 @@
             desc: { hu: "Körülbelül $100\,000\\text{ m}^3$ por (egy teljes felhőkarcoló vagy stadion belső tere).", en: "Approximately $100,000\\text{ m}^3$ of dust (interior of a stadium or skyscraper)." }
         };
 
+        const ILL_ELECTRON_CHARGE = {
+            sortVal: 18.79,
+            title: { hu: "Az elektron töltése (1 Coulomb reciproka)", en: "Electron charge (Reciprocal of 1 Coulomb)" },
+            badge: "$1{,}602 \\cdot 10^{-19}\\,\\text{C}$",
+            desc: { hu: "Egyetlen elektron elemi töltése. Ahhoz, hogy 1 Coulombnyi töltést kapjunk, mintegy <b>$6{,}24 \\cdot 10^{18}$ darab elektronra</b> van szükség.", en: "Elementary charge of a single electron. To accumulate 1 Coulomb of charge, you need roughly <b>$6.24 \\cdot 10^{18}$ electrons</b>." }
+        };
+
+        const ILL_INT64_MAX = {
+            sortVal: 18.96,
+            title: { hu: "64-bites előjeles egész (Int64) maximuma", en: "64-bit signed integer (Int64) max value" },
+            badge: "$2^{63}-1 \\approx 9{,}22 \\cdot 10^{18}$",
+            desc: { hu: "A legnagyobb pontos számérték, amelyet egy standard 64 bites előjeles egész változó (pl. C++, Java, C# nyelvben) tárolni képes.", en: "The maximum numeric value that a standard 64-bit signed integer variable can store." }
+        };
+
         const ILL_RUBIK_3X3 = {
             sortVal: 19.63,
             title: { hu: "3×3×3 Rubik-kocka kombinációi", en: "3×3×3 Rubik's Cube combinations" },
@@ -776,6 +804,20 @@
             desc: { hu: "A Föld összes tengerpartján található homokszemek becsült száma (kb. $7{,}5 \\cdot 10^{21}$).", en: "Estimated total grains of sand across all beaches on Earth (~$7.5 \times 10^{21}$)." }
         };
 
+        const ILL_ELECTRON_DIAMETER = {
+            sortVal: 22.0,
+            title: { hu: "Az elektron elméleti átmérője", en: "Theoretical diameter of an electron" },
+            badge: "$< 10^{-22}\\,\\text{m}$",
+            desc: { hu: "A Standard Modell szerint az elektron pontszerű. A kísérleti felső határ az átmérőjére rendkívül apró: $10^{-22}$ méter. Egy méteren <b>$10^{22}$ darab</b> férne el egymás mellett.", en: "According to the Standard Model, the electron is point-like. Its experimental upper bound diameter is $10^{-22}$ meters. <b>$10^{22}$ of them</b> could fit in one meter." }
+        };
+
+        const ILL_TOTAL_TRANSISTORS = {
+            sortVal: 23.0,
+            title: { hu: "Az összes valaha gyártott tranzisztor", en: "All transistors ever manufactured" },
+            badge: "$\\sim 10^{23}$",
+            desc: { hu: "Az emberiség által története során legyártott tranzisztorok becsült összessége. Ez messze a legnagyobb példányszámban előállított mesterséges dolog a Földön.", en: "Estimated total number of transistors manufactured by humanity in history. It is by far the most massively produced artificial object on Earth." }
+        };
+
         const ILL_AVOGADRO = {
             sortVal: 23.78,
             title: { hu: "Avogadro-szám (1 mol)", en: "Avogadro constant (1 mol)" },
@@ -797,11 +839,11 @@
             desc: { hu: "A megfigyelhető világegyetem teljes átmérője kb. <b>93 milliárd fényév</b>.", en: "Diameter of the observable Universe is ~$93\\text{ billion light-years}$." }
         };
 
-        const ILL_HUMAN_BODY_ATOMS = {
-            sortVal: 27.85,
-            title: { hu: "Atomok száma az emberi testben", en: "Atoms in a human body" },
-            badge: "$7 \\cdot 10^{27}$",
-            desc: { hu: "Egy 70 kg-os felnőtt emberi testet körülbelül <b>7 kvadrillió atom</b> épít fel.", en: "A 70 kg human body is built from approximately <b>7 octillion atoms</b>." }
+        const ILL_DUST_OCTILLION = {
+            sortVal: 27.0,
+            title: { hu: "1 kvadrilliárd porszem (térfogat)", en: "1 octillion dust grains (Volume)" },
+            badge: { hu: "$10^{27}\\,\\text{porszem}$", en: "$10^{27}\\,\\text{grains}$" },
+            desc: { hu: "Körülbelül $100\,000\\text{ km}^3$ por (Magyarország teljes területe felett 1 km magas tömör porréteg).", en: "Approximately $100,000\\text{ km}^3$ of dust (1 km thick layer over Hungary)." }
         };
 
         const ILL_HU_INFLATION_CUMULATIVE = {
@@ -811,11 +853,11 @@
             desc: { hu: "1945 augusztusa és 1946 júliusa között az árak átlagosan $3{,}8 \\cdot 10^{27}$%-kal emelkedtek Magyarországon.", en: "Cumulative price increase in Hungary between Aug 1945 and July 1946." }
         };
 
-        const ILL_PENGO_FORINT_EXCHANGE = {
-            sortVal: 29.6,
-            title: { hu: "Pengő – Forint elméleti váltószám", en: "Pengő to Forint exchange rate" },
-            badge: "$4 \\cdot 10^{29}\\,\\text{P}$",
-            desc: { hu: "A Forint bevezetésekor (1946. augusztus 1.) 1 Forintért elméletileg <b>400 ezer kvadrillió Pengőt</b> kellett volna adni.", en: "Theoretical exchange rate on Aug 1, 1946: 1 Forint = $4 \times 10^{29}$ Pengő." }
+        const ILL_HUMAN_BODY_ATOMS = {
+            sortVal: 27.85,
+            title: { hu: "Atomok száma az emberi testben", en: "Atoms in a human body" },
+            badge: "$7 \\cdot 10^{27}$",
+            desc: { hu: "Egy 70 kg-os felnőtt emberi testet körülbelül <b>7 kvadrillió atom</b> épít fel.", en: "A 70 kg human body is built from approximately <b>7 octillion atoms</b>." }
         };
 
         const ILL_YUGOSLAV_DINAR = {
@@ -825,11 +867,18 @@
             desc: { hu: "A jugoszláv dinár sorozatos nullatörléseinek (denominációinak) eredőjeként 1994-re $1{,}3 \\cdot 10^{29}$ régi dinár ért 1 új dinárt.", en: "Result of redenominations: 1 new dinar = $1.3 \times 10^{29}$ original dinars." }
         };
 
-        const ILL_DUST_OCTILLION = {
-            sortVal: 27.0,
-            title: { hu: "1 kvadrilliárd porszem (térfogat)", en: "1 octillion dust grains (Volume)" },
-            badge: { hu: "$10^{27}\\,\\text{porszem}$", en: "$10^{27}\\,\\text{grains}$" },
-            desc: { hu: "Körülbelül $100\,000\\text{ km}^3$ por (Magyarország teljes területe felett 1 km magas tömör porréteg).", en: "Approximately $100,000\\text{ km}^3$ of dust (1 km thick layer over Hungary)." }
+        const ILL_PENGO_FORINT_EXCHANGE = {
+            sortVal: 29.6,
+            title: { hu: "Pengő – Forint elméleti váltószám", en: "Pengő to Forint exchange rate" },
+            badge: "$4 \\cdot 10^{29}\\,\\text{P}$",
+            desc: { hu: "A Forint bevezetésekor (1946. augusztus 1.) 1 Forintért elméletileg <b>400 ezer kvadrillió Pengőt</b> kellett volna adni.", en: "Theoretical exchange rate on Aug 1, 1946: 1 Forint = $4 \times 10^{29}$ Pengő." }
+        };
+
+        const ILL_ELECTRON_MASS = {
+            sortVal: 30.04,
+            title: { hu: "Az elektron tömege", en: "Electron mass" },
+            badge: "$9{,}109 \\cdot 10^{-31}\\,\\text{kg}$",
+            desc: { hu: "Az elektron nyugalmi tömege. Pontosan <b>$1{,}09 \\cdot 10^{30}$ darab elektron</b> tenne ki együtt 1 kilogramm tömeget.", en: "Rest mass of an electron. Exactly <b>$1.09 \\cdot 10^{30}$ electrons</b> combined would weigh 1 kilogram." }
         };
 
         const ILL_SUN_MASS = {
@@ -853,18 +902,18 @@
             desc: { hu: "Körülbelül $100\\text{ milliárd km}^3$ por (egy teljes Föld-méretű kőzetbolygó térfogatának kb. 10%-a).", en: "Approximately $100\\text{ billion km}^3$ of dust (~10% of Earth's total volume)." }
         };
 
+        const ILL_PLANCK_LENGTH = {
+            sortVal: 34.79,
+            title: { hu: "Planck-hossz", en: "Planck length" },
+            badge: "$1{,}616 \\cdot 10^{-35}\\,\\text{m}$",
+            desc: { hu: "A térbeli távolság legkisebb értelmezhető egysége. Egyetlen méterbe pontosan <b>$6{,}18 \\cdot 10^{34}$ Planck-hossz</b> fér bele.", en: "The shortest meaningful unit of distance. Exactly <b>$6.18 \\cdot 10^{34}$ Planck lengths</b> fit into one meter." }
+        };
+
         const ILL_UUID = {
             sortVal: 36.72,
             title: { hu: "Összes UUID v4 variáció", en: "Total UUID v4 variations" },
             badge: "$5{,}31 \\cdot 10^{36}$",
             desc: { hu: "A 128 bites Universally Unique Identifier (UUID v4) 122 bites tiszta entrópiájának ($2^{122}$) lehetséges változatai (a teljes 128 bites szókészlet $3{,}4 \\cdot 10^{38}$).", en: "122-bit pure entropy variations of UUID v4 ($2^{122} \approx 5.31 \times 10^{36}$)." }
-        };
-
-        const ILL_AES_128 = {
-            sortVal: 38.53,
-            title: { hu: "AES-128 kriptográfiai kulcstér", en: "AES-128 key space" },
-            badge: "$3{,}4 \\cdot 10^{38}$",
-            desc: { hu: "A 128 bites AES titkosítás lehetséges kulcsainak száma ($2^{128} \\approx 3{,}4 \\cdot 10^{38}$).", en: "Key space size for 128-bit AES encryption ($2^{128} \\approx 3.4 \\cdot 10^{38}$)." }
         };
 
         const ILL_BIOMASS_DNA_BASE_PAIRS = {
@@ -874,6 +923,13 @@
             desc: { hu: "A Földön élő valamennyi élőlény sejtmagjaiban található összesített DNS-bázispárok száma.", en: "Total estimated DNA base pairs contained across all living organisms on Earth." }
         };
 
+        const ILL_AES_128 = {
+            sortVal: 38.53,
+            title: { hu: "AES-128 kriptográfiai kulcstér", en: "AES-128 key space" },
+            badge: "$3{,}4 \\cdot 10^{38}$",
+            desc: { hu: "A 128 bites AES titkosítás lehetséges kulcsainak száma ($2^{128} \\approx 3{,}4 \\cdot 10^{38}$).", en: "Key space size for 128-bit AES encryption ($2^{128} \\approx 3.4 \\cdot 10^{38}$)." }
+        };
+
         const ILL_IPV6 = {
             sortVal: 38.53,
             title: { hu: "Az IPv6 teljes címtere", en: "Total IPv6 address space" },
@@ -881,11 +937,18 @@
             desc: { hu: "Az internetes eszközök azonosítására használt 128 bites IPv6 protokoll címtartománya ($2^{128}$). A Föld minden mm²-ére 6,6 × 10²³ külön cím jutna.", en: "128-bit IPv6 address space ($2^{128}$). Provides ~$6.6 \times 10^{23}$ addresses per mm² on Earth." }
         };
 
-        const ILL_RUBIK_4X4 = {
-            sortVal: 45.87,
-            title: { hu: "4×4×4 Rubik-kocka (Rubik's Revenge)", en: "4×4×4 Rubik's Cube (Rubik's Revenge)" },
-            badge: "$7{,}40 \\cdot 10^{45}$",
-            desc: { hu: "A 4 rétegű Rubik-kocka lehetséges egyedi állásainak száma $7{,}4 \\cdot 10^{45}$-re ugrik.", en: "Unique state combinations for the 4-layer Rubik's Revenge: <b>$7.4 \times 10^{45}$</b>." }
+        const ILL_ELECTRON_GRAVITY_RATIO = {
+            sortVal: 42.61,
+            title: { hu: "Két elektron EM / Gravitációs erő aránya", en: "EM / Gravitational force ratio of 2 electrons" },
+            badge: "$\\sim 4{,}16 \\cdot 10^{42}$",
+            desc: { hu: "Két elektron közötti elektromágneses taszítás gigantikus mértékben, több mint <b>$10^{42}$-szer erősebb</b>, mint a köztük ható gravitációs vonzás.", en: "The electromagnetic repulsion between two electrons is massive, over <b>$10^{42}$ times stronger</b> than their gravitational attraction." }
+        };
+
+        const ILL_PLANCK_TIME = {
+            sortVal: 43.26,
+            title: { hu: "Planck-idő", en: "Planck time" },
+            badge: "$5{,}39 \\cdot 10^{-44}\\,\\text{s}$",
+            desc: { hu: "A fizika legrövidebb értelmezhető időtartama (amíg a fény megtesz egy Planck-hosszt). Egyetlen másodperc alatt <b>$1{,}85 \\cdot 10^{43}$ Planck-idő</b> telik el.", en: "The shortest meaningful unit of time. A single second contains <b>$1.85 \\cdot 10^{43}$ Planck times</b>." }
         };
 
         const ILL_CHESS_LEGAL_POSITIONS = {
@@ -893,6 +956,13 @@
             title: { hu: "Legális sakkállások pontos száma", en: "Exact legal chess positions" },
             badge: "$4{,}8 \\cdot 10^{44}$",
             desc: { hu: "A sakktáblán a játékszabályok szerint ténylegesen elérhető (legális) pozíciók pontos száma ($4{,}8 \\cdot 10^{44}$).", en: "Exact number of reachable, legal board positions in chess ($4.8 \times 10^{44}$)." }
+        };
+
+        const ILL_RUBIK_4X4 = {
+            sortVal: 45.87,
+            title: { hu: "4×4×4 Rubik-kocka (Rubik's Revenge)", en: "4×4×4 Rubik's Cube (Rubik's Revenge)" },
+            badge: "$7{,}40 \\cdot 10^{45}$",
+            desc: { hu: "A 4 rétegű Rubik-kocka lehetséges egyedi állásainak száma $7{,}4 \\cdot 10^{45}$-re ugrik.", en: "Unique state combinations for the 4-layer Rubik's Revenge: <b>$7.4 \times 10^{45}$</b>." }
         };
 
         const ILL_CHESS_POSITIONS_UPPER = {
@@ -985,6 +1055,13 @@
             desc: { hu: "A 6-rétegű Rubik-kocka lehetséges állapotainak száma eléri az $1{,}57 \\cdot 10^{116}$-at.", en: "Unique states of the 6-layer V-Cube 6 reach <b>$1.57 \times 10^{116}$</b>." }
         };
 
+        const ILL_COSMOLOGICAL_CONSTANT = {
+            sortVal: 120.0,
+            title: { hu: "Kozmológiai állandó (Vákuumkatasztrófa)", en: "Cosmological constant (Vacuum catastrophe)" },
+            badge: "$\\sim 10^{120}$",
+            desc: { hu: "A kvantumtérelmélet által jósolt vákuumenergia-sűrűség és a megfigyelt érték közötti eltérés aránya. A fizika történetének legnagyobb tévedése (120 nagyságrend).", en: "The ratio between the predicted vacuum energy density and the observed value. The largest discrepancy in physics (120 orders of magnitude)." }
+        };
+
         const ILL_SHANNON_NUMBER = {
             sortVal: 120.0,
             title: { hu: "Shannon-szám (Sakk játékfa-komplexitás)", en: "Shannon number (Chess game tree)" },
@@ -1025,6 +1102,20 @@
             title: { hu: "9×9×9 Rubik-kocka állapottere", en: "9×9×9 Rubik's Cube state space" },
             badge: "$1{,}42 \\cdot 10^{277}$",
             desc: { hu: "A 9-rétegű Rubik-kocka lehetséges állásainak száma $1{,}42 \\cdot 10^{277}$.", en: "Unique states of the 9-layer Rubik's cube: <b>$1.42 \times 10^{277}$</b>." }
+        };
+
+        const ILL_DOUBLE64_MIN = {
+            sortVal: 307.65,
+            title: { hu: "64-bites Double legkisebb pozitív száma", en: "64-bit Double smallest positive value" },
+            badge: "$2{,}22 \\cdot 10^{-308}$",
+            desc: { hu: "A legkisebb, normalizált formában még éppen ábrázolható nullánál nagyobb lebegőpontos érték. Reciproka elképesztő, <b>$4{,}5 \\cdot 10^{307}$</b> nagyságú.", en: "The smallest positive normalized floating-point value. Its reciprocal is a massive <b>$4.5 \\cdot 10^{307}$</b>." }
+        };
+
+        const ILL_DOUBLE64_MAX = {
+            sortVal: 308.25,
+            title: { hu: "64-bites Double (IEEE 754) maximuma", en: "64-bit Double (IEEE 754) max value" },
+            badge: "$\\approx 1{,}79 \\cdot 10^{308}$",
+            desc: { hu: "A legnagyobb ábrázolható véges szám egy standard duplapontos lebegőpontos változóban (Number.MAX_VALUE).", en: "The largest representable finite number in a double-precision floating-point type (Number.MAX_VALUE)." }
         };
 
         const ILL_RSA_1024 = {
@@ -1254,7 +1345,7 @@
         const ILL_LOTTERY_HISTORY = {
             sortVal: 1e8,
             title: { hu: "Minden lottóhúzás telitalálata a történelemben", en: "Winning every lottery jackpot in history" },
-            badge: "$1:10^{10^8}$",
+            badge: "$1:10^{100\\,000\\,000}$",
             desc: { hu: "Annak az esélye, hogy a történelem összes lottóhúzásának mindegyikén egyetlen szelvénnyel játszva mindet eltaláljuk.", en: "Odds of hitting every single lottery jackpot in history with a single ticket each time." }
         };
 
@@ -1286,6 +1377,13 @@
             desc: { hu: "Kecskemét teljes lakosságának (~100 000 fő) valamennyi egyedi sorrendje ($100\\,000! \\approx 2{,}82 \\cdot 10^{456\\,570}$, egy 456 571 számjegyű szám).", en: "Total unique line-up variations for the entire population of Kecskemét (~100,000 residents) ($100,000! \\approx 2.82 \\cdot 10^{456,570}$, a 456,571-digit number)." }
         };
 
+        const ILL_ALL_DICE_SIX = {
+            sortVal: 8e10,
+            title: { hu: "A világ összes dobókockája hatost mutat", en: "All dice in the world rolling a six" },
+            badge: "$1:10^{8\\,000\\,000\\,000}$",
+            desc: { hu: "Ha a világon létező becsült összes (kb. 10 milliárd) dobókockát egyszerre elgurítanánk, annak az esélye, hogy mindegyik pontosan hatost mutasson.", en: "Probability that if all estimated existing dice in the world (~10 billion) were rolled simultaneously, every single one would land on a six." }
+        };
+
         const ILL_CARDS_SHUFFLE_RESET = {
             sortVal: 1e11,
             title: { hu: "A világ összes kártyapaklija gyári sorrendbe keveredik", en: "All world card decks shuffle into original order" },
@@ -1293,11 +1391,25 @@
             desc: { hu: "Annak az esélye, hogy ha megkeverjük a világ összes francia kártyapakliját, mindegyik pont az eredeti gyári sorrendbe kerül.", en: "Odds that shuffling every card deck on Earth simultaneously returns all of them to factory order." }
         };
 
+        const ILL_ALL_COINS_HEADS = {
+            sortVal: 3.01e11,
+            title: { hu: "A történelem összes érméje fejre esik", en: "All coins in history landing on heads" },
+            badge: "$1:10^{3 \\cdot 10^{11}}$",
+            desc: { hu: "Ha a világtörténelem során vert összes érmét (kb. 1 billió, azaz $10^{12}$ darabot) egyszerre feldobnánk, ennyi az esélye, hogy mind egy előre meghatározott oldalra essen ($2^{10^{12}}$).", en: "Probability that if every coin ever minted in history (~1 trillion, or $10^{12}$ coins) were flipped simultaneously, they would all land on a pre-determined side ($2^{10^{12}}$)." }
+        };
+
         const ILL_HAMLET_TYPING = {
             sortVal: 1e15,
             title: { hu: "A Föld minden embere véletlenül legépeli a Hamletet", en: "Every human on Earth randomly types Hamlet" },
             badge: "$1:10^{10^{15}}$",
             desc: { hu: "Annak az esélye, hogy a Föld összes embere elkezd gépelni egy 130 000 karakteres szöveget, és mindenki véletlenül pont a Hamletet gépeli le.", en: "Probability that all 8 billion humans randomly type 130,000 characters and each produces Shakespeare's Hamlet." }
+        };
+
+        const ILL_ARCHIMEDES_MYRIAD = {
+            sortVal: 8e16,
+            title: { hu: "Arkhimédész végső száma", en: "Archimedes' ultimate number" },
+            badge: "$10^{8 \\cdot 10^{16}}$",
+            desc: { hu: "A Pszammitész (Homokszámláló) című művében Arkhimédész által megalkotott elméleti legnagyobb szám, amelyet a görög miriád (10 000) többszörös hatványozásával hozott létre az ókorban.", en: "The absolute largest theoretical number defined by Archimedes in The Sand Reckoner, created in antiquity by exponentiating the Greek myriad (10,000)." }
         };
 
         const ILL_WATER_BOIL_FREEZE = {
@@ -1321,11 +1433,19 @@
             desc: { hu: "Annak az esélye, hogy a reggeli kávé a kevergetés hatására spontán fekete lyukká változik.", en: "Odds that stirring a cup of morning coffee causes it to spontaneously collapse into a black hole." }
         };
 
-        const ILL_OXYGEN_CORNER = {
+
+        const ILL_OXYGEN_CORNER_INSTANT = {
             sortVal: 1e26,
-            title: { hu: "Szoba oxigénmolekulái egy sarokba tömörülnek", en: "Room oxygen molecules rushing into one corner" },
+            title: { hu: "Szoba oxigénje egy sarokba ugrik (1 pillanat)", en: "Room oxygen jumps to one corner (1 instant)" },
             badge: "$1:10^{10^{26}}$",
-            desc: { hu: "Annak az esélye, hogy egy zárt szobában az összes oxigénmolekula spontán egy sarokba tömörül, és megfulladunk.", en: "Probability that all oxygen molecules in a room spontaneously gather in a single corner." }
+            desc: { hu: "Annak az esélye, hogy egy zárt szobában az összes oxigénmolekula egyetlen pillanatra spontán egy sarokba tömörüljön.", en: "Probability that all oxygen molecules spontaneously jump to one corner for a single instant." }
+        };
+
+        const ILL_OXYGEN_CORNER_SUSTAINED = {
+            sortVal: 1e38,
+            title: { hu: "Oxigén a sarokban marad 3 percig (megfulladás)", en: "Oxygen stays in corner for 3 mins (suffocation)" },
+            badge: "$1:10^{10^{38}}$",
+            desc: { hu: "Annak az esélye, hogy a fluktuáció percekig fennmaradjon, ami tényleges megfulladáshoz vezetne egy szobában.", en: "Probability that the fluctuation is sustained for minutes, leading to actual suffocation." }
         };
 
         const ILL_QUANTUM_TUNNEL = {
@@ -1387,7 +1507,7 @@
         const ILL_TEN_BILLION_FACT = {
             sortVal: 75000000000.0,
             title: { hu: "A Föld összes lakójának sorbanállása (8,2 milliárd!)", en: "Line-up of all humans on Earth (8.2 billion!)" },
-            badge: "$8\\,200\\,000\\,000! \\approx 10^{75\\,000\\,000\\,000}$",
+            badge: "$8\\,200\\,000\\,000! \\approx 10^{7,5 \\cdot 10^{10}}$",
             desc: { hu: "A Föld összes lakójának sorbanállása ($8\\,200\\,000\\,000! \\approx 10^{75\\,000\\,000\\,000}$.", en: "Permutations of all 8.2 billion people on Earth standing in line, with an exponent of ~75 billion." }
         };
 
@@ -1434,6 +1554,7 @@
             { targets: [{ v1: 1, v2: 3, x: 10 }, { v1: 2, v2: 1, x: 3 }], ...ILL_DUST_1K },
             { targets: [{ v1: 1, v2: 3, x: 10 }, { v1: 2, v2: 1, x: 3 }], ...ILL_THOUSAND_SEC },
 
+            { targets: [{ v1: 2, v2: 1, x: 6 }], ...ILL_ROYAL_FLUSH },
             { targets: [{ v1: 2, v2: 1, x: 6 }], ...ILL_DUST_1M },
             { targets: [{ v1: 2, v2: 1, x: 6 }], ...ILL_MILLION_SEC },
             { targets: [{ v1: 2, v2: 1, x: 6 }], ...ILL_RUBIK_2X2 },
@@ -1451,6 +1572,7 @@
             { targets: [{ v1: 2, v2: 1, x: 9 }], ...ILL_IPV4_ADDRESSES },
             { targets: [{ v1: 2, v2: 1, x: 9 }], ...ILL_EARTH_POPULATION },
 
+            { targets: [{ v1: 2, v2: 1, x: 10 }, { v1: 2, v2: 2, x: 1 }], ...ILL_LIGHT_1MM },
             { targets: [{ v1: 2, v2: 1, x: 10 }, { v1: 2, v2: 2, x: 1 }], ...ILL_TREES_EARTH },
             { targets: [{ v1: 2, v2: 1, x: 10 }, { v1: 2, v2: 2, x: 1 }], ...ILL_TRILLION_SEC },
             { targets: [{ v1: 2, v2: 1, x: 10 }, { v1: 2, v2: 2, x: 1 }], ...ILL_DUST_TRILLION },
@@ -1469,10 +1591,14 @@
             { targets: [{ v1: 2, v2: 1, x: 10 }, { v1: 2, v2: 2, x: 1 }], ...ILL_DUST_QUINTILLION },
             { targets: [{ v1: 2, v2: 1, x: 10 }, { v1: 2, v2: 2, x: 1 }], ...ILL_RUBIK_3X3 },
 
+            { targets: [{ v1: 2, v2: 2, x: 2 }], ...ILL_ELECTRON_CHARGE },
+            { targets: [{ v1: 2, v2: 2, x: 2 }], ...ILL_INT64_MAX },
+            { targets: [{ v1: 2, v2: 2, x: 2 }], ...ILL_ELECTRON_DIAMETER },
             { targets: [{ v1: 2, v2: 2, x: 2 }], ...ILL_GRAIN_SAND_ATOMS },
             { targets: [{ v1: 2, v2: 2, x: 2 }], ...ILL_PENGO_100M_B },
             { targets: [{ v1: 2, v2: 2, x: 2 }], ...ILL_SUDOKU_GRIDS },
             { targets: [{ v1: 2, v2: 2, x: 2 }], ...ILL_BEACH_SAND_GRAINS },
+            { targets: [{ v1: 2, v2: 2, x: 2 }], ...ILL_TOTAL_TRANSISTORS },
             { targets: [{ v1: 2, v2: 2, x: 2 }], ...ILL_AVOGADRO },
             { targets: [{ v1: 2, v2: 2, x: 2 }], ...ILL_DIGITAL_DATA_EARTH },
             { targets: [{ v1: 2, v2: 2, x: 2 }], ...ILL_DUST_SEXTILLION },
@@ -1486,11 +1612,15 @@
             { targets: [{ v1: 2, v2: 2, x: 3 }], ...ILL_SUN_MASS },
             { targets: [{ v1: 2, v2: 2, x: 3 }], ...ILL_DUST_NONILLION },
             { targets: [{ v1: 2, v2: 2, x: 3 }], ...ILL_DUST_DECILLION },
+            { targets: [{ v1: 2, v2: 2, x: 3 }], ...ILL_ELECTRON_MASS },
+            { targets: [{ v1: 2, v2: 2, x: 3 }], ...ILL_PLANCK_LENGTH },
             { targets: [{ v1: 2, v2: 2, x: 3 }], ...ILL_VIRUSES_EARTH },
             { targets: [{ v1: 2, v2: 2, x: 3 }], ...ILL_UUID },
             { targets: [{ v1: 2, v2: 2, x: 3 }], ...ILL_BIOMASS_DNA_BASE_PAIRS },
             { targets: [{ v1: 2, v2: 2, x: 3 }], ...ILL_IPV6 },
             { targets: [{ v1: 2, v2: 2, x: 3 }], ...ILL_AES_128 },
+            { targets: [{ v1: 2, v2: 2, x: 4 }], ...ILL_ELECTRON_GRAVITY_RATIO },
+            { targets: [{ v1: 2, v2: 2, x: 4 }], ...ILL_PLANCK_TIME },
             { targets: [{ v1: 2, v2: 2, x: 4 }], ...ILL_CHESS_LEGAL_POSITIONS },
             { targets: [{ v1: 2, v2: 2, x: 4 }], ...ILL_CHESS_POSITIONS_UPPER },
             { targets: [{ v1: 2, v2: 2, x: 4 }], ...ILL_RUBIK_4X4 },
@@ -1517,9 +1647,12 @@
             { targets: [{ v1: 2, v2: 2, x: 10 }, { v1: 2, v2: 3, x: 1 }], ...ILL_BLACK_HOLE_LIFETIME },
             { targets: [{ v1: 2, v2: 2, x: 10 }, { v1: 2, v2: 3, x: 1 }], ...ILL_TSP_100 },
             { targets: [{ v1: 2, v2: 2, x: 10 }, { v1: 2, v2: 3, x: 1 }], ...ILL_UNIVERSE_PLANCK_VOL },
+            { targets: [{ v1: 2, v2: 2, x: 10 }, { v1: 2, v2: 3, x: 1 }], ...ILL_COSMOLOGICAL_CONSTANT },
 
             { targets: [{ v1: 2, v2: 3, x: 2 }], ...ILL_RUBIK_8X8 },
             { targets: [{ v1: 2, v2: 3, x: 2 }], ...ILL_RUBIK_9X9 },
+            { targets: [{ v1: 2, v2: 3, x: 3 }], ...ILL_DOUBLE64_MIN },
+            { targets: [{ v1: 2, v2: 3, x: 3 }], ...ILL_DOUBLE64_MAX },
             { targets: [{ v1: 2, v2: 3, x: 3 }], ...ILL_RSA_1024 },
             { targets: [{ v1: 2, v2: 3, x: 3 }], ...ILL_RUBIK_10X10 },
             { targets: [{ v1: 2, v2: 3, x: 4 }], ...ILL_RUBIK_11X11 },
@@ -1554,14 +1687,18 @@
             { targets: [{ v1: 3, v2: 1, x: 8 }], ...ILL_HUNDRED_MILLION_FACT },
             { targets: [{ v1: 3, v2: 1, x: 9 }], ...ILL_BILLION_FACT },
             { targets: [{ v1: 3, v2: 1, x: 9 }], ...ILL_DNA_COMBINATIONS },
+            { targets: [{ v1: 3, v2: 1, x: 9 }], ...ILL_ALL_DICE_SIX },
             { targets: [{ v1: 3, v2: 1, x: 10 }, { v1: 3, v2: 2, x: 1 }], ...ILL_TEN_BILLION_FACT },
+            { targets: [{ v1: 3, v2: 1, x: 10 }, { v1: 3, v2: 2, x: 1 }], ...ILL_CARDS_SHUFFLE_RESET },
+            { targets: [{ v1: 3, v2: 1, x: 10 }, { v1: 3, v2: 2, x: 1 }], ...ILL_ALL_COINS_HEADS },
+            { targets: [{ v1: 3, v2: 1, x: 10 }, { v1: 3, v2: 2, x: 1 }], ...ILL_HAMLET_TYPING },
+            { targets: [{ v1: 3, v2: 1, x: 10 }, { v1: 3, v2: 2, x: 1 }], ...ILL_ARCHIMEDES_MYRIAD },
 
-            { targets: [{ v1: 3, v2: 2, x: 1 }], ...ILL_CARDS_SHUFFLE_RESET },
-            { targets: [{ v1: 3, v2: 2, x: 1 }], ...ILL_HAMLET_TYPING },
             { targets: [{ v1: 3, v2: 2, x: 2 }], ...ILL_WATER_BOIL_FREEZE },
             { targets: [{ v1: 3, v2: 2, x: 2 }], ...ILL_MOVIE_SCREENS },
             { targets: [{ v1: 3, v2: 2, x: 2 }], ...ILL_COFFEE_BLACK_HOLE },
-            { targets: [{ v1: 3, v2: 2, x: 2 }], ...ILL_OXYGEN_CORNER },
+            { targets: [{ v1: 3, v2: 2, x: 2 }], ...ILL_OXYGEN_CORNER_INSTANT },
+            { targets: [{ v1: 3, v2: 2, x: 3 }], ...ILL_OXYGEN_CORNER_SUSTAINED },
             { targets: [{ v1: 3, v2: 2, x: 3 }], ...ILL_QUANTUM_TUNNEL },
             { targets: [{ v1: 3, v2: 2, x: 3 }], ...ILL_SUMMER_BLIZZARD },
             { targets: [{ v1: 3, v2: 2, x: 5 }], ...ILL_BOLTZMANN_BRAIN },
